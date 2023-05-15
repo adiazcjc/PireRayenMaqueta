@@ -1,0 +1,88 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@600&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+  font-family: "Noto Sans", sans-serif;
+}
+
+.containerHome {
+  height: auto;
+  background-color: #f5f5f5;
+  width: 100%;
+  display: inline-block;
+}
+.checklist {
+  width: 100%;
+}
+.star-rating {
+  display: flex;
+  flex-direction: row-reverse;
+  font-size: 2.2em;
+  justify-content: space-around;
+  padding: 0 0.5em;
+  text-align: center;
+  width: 5em;
+}
+
+.star-rating input {
+  display: none;
+}
+
+.star-rating label {
+  color: #ccc;
+  cursor: pointer;
+}
+
+.star-rating :checked ~ label {
+  color: #f90;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+  color: #fc0;
+}
+
+.tof {
+  display: flex;
+
+  font-size: 2.2em;
+  justify-content: space-around;
+
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.radio-group {
+  display: flex;
+  
+  align-items: center;
+  
+  margin: auto;
+  
+}
+
+.input-tof {
+  display: none;
+}
+
+.input-tof:checked + label {
+  background: #087e8b;
+  border-color: #1874b5;
+  color: #fff;
+  transition: all 125ms ease-out;
+}
+.labeltof {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  color: #444;
+  cursor: pointer;
+  font-size: 12px;
+  display: inline-block;
+  padding: 10px;
+  text-transform: uppercase;
+  transition: none;
+}
