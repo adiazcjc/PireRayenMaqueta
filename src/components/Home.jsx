@@ -11,7 +11,7 @@ export default function Home() {
     dispatch(getCars());
     dispatch(getClean());
   }, [dispatch]);
-//probar
+  //probar
   const allCars = useSelector((state) => state.cars);
   const allModels = useSelector((state) => state.models);
   const allVersions = useSelector((state) => state.versions);
@@ -20,6 +20,12 @@ export default function Home() {
     anio: 2000,
   });
 
+  const [mostrarOtroSelect, setMostrarOtroSelect] = useState(false);
+
+  const [disableSelects, setDisableSelects] = useState(false);
+  const [marcaSeleccionada, setMarcaSeleccionada] = useState("");
+  const [desactivarInput, setDesactivarInput] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("");
   if (allModels) {
     for (var i = 0; i < allModels.length; i++) {
       var arrayModels = allModels[i].modelo;
@@ -36,7 +42,29 @@ export default function Home() {
   function handleFilterModel(e) {
     e.preventDefault();
     dispatch(filterModel(e.target.value));
+
+    const { value } = e.target;
+    if (value === "otra") {
+      setMostrarOtroSelect(true);
+      setDisableSelects(true);
+      setMarcaSeleccionada("");
+    } else {
+      setMostrarOtroSelect(false);
+      setDisableSelects(false);
+    }
   }
+
+  const handleRadioChange = (e) => {
+    if (e.target.id === "5-box") {
+      setDesactivarInput(true);
+    } else {
+      setDesactivarInput(false);
+    }
+  };
+
+  const handleStarChange = (e) => {
+    setSelectedOption(e.target.id);
+  };
 
   function handleFilterVersion(e) {
     e.preventDefault();
@@ -52,28 +80,70 @@ export default function Home() {
           {/* INFORMACION DEL CLIENTE */}
           <div className="col-md">
             Información del cliente
-            <input
-              type="text"
-              className="form-control mt-3"
-              placeholder="Cliente"
-              aria-label="client"
-            />
-            <div className="row">
-              <div className="col">
+            <div class="form">
+              <div class="form-group">
                 <input
                   type="text"
-                  className="form-control mt-1"
-                  placeholder="Teléfono"
-                  aria-label="telephone"
+                  name="name"
+                  placeholder=" "
+                  id="name"
+                  autocomplete="off"
+                  required
                 />
+                <label for="name" class="label-name">
+                  <span class="content-name">Nombre del cliente</span>
+                </label>
+              </div>
+            </div>
+            {/* <input
+              type="text"
+              // className="form-control mt-3"
+              className="box-input"
+              aria-label="client"
+            />
+            <label for="text" className="input-label">
+              Cliente
+            </label> */}
+            <div className="row">
+              <div className="col">
+                <div class="form">
+                  <div class="form-group">
+                    <input
+                      type="text"
+                      name="tel"
+                      placeholder=" "
+                      id="tel"
+                      autocomplete="off"
+                      required
+                    />
+                    <label for="tel" class="label-name">
+                      <span class="content-name">Teléfono</span>
+                    </label>
+                  </div>
+                </div>
               </div>
               <div className="col">
-                <input
+                <div class="form">
+                  <div class="form-group">
+                    <input
+                      type="text"
+                      name="email"
+                      placeholder=" "
+                      id="email"
+                      autocomplete="off"
+                      required
+                    />
+                    <label for="email" class="label-name">
+                      <span class="content-name">Email</span>
+                    </label>
+                  </div>
+                </div>
+                {/* <input
                   type="date"
                   id="date"
                   name="date"
                   className="form-control mt-1"
-                />
+                /> */}
               </div>
             </div>
           </div>
@@ -99,13 +169,36 @@ export default function Home() {
                   </option>
                 );
               })}
+              <option value="otra">Otra</option>
             </select>
+            {mostrarOtroSelect && (
+              <div>
+                <div class="form">
+                  <div class="form-group">
+                    <input
+                      type="text"
+                      name="otro"
+                      placeholder=" "
+                      id="otro"
+                      autocomplete="off"
+                      required
+                    />
+                    <label for="otro" class="label-name">
+                      <span class="content-name">
+                        Ingrese otra marca / modelo
+                      </span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
             {
               <select
                 id="2"
                 className="form-select mt-1"
                 aria-label="Default select example"
                 onChange={(e) => handleFilterVersion(e)}
+                disabled={disableSelects}
               >
                 <option value="" hidden name="cars">
                   Modelo
@@ -124,6 +217,7 @@ export default function Home() {
                 id="3"
                 className="form-select mt-1"
                 aria-label="Default select example"
+                disabled={disableSelects}
               >
                 <option value="" hidden name="cars">
                   Versión
@@ -139,12 +233,24 @@ export default function Home() {
             }
             <div className="row">
               <div className="col">
-                <input
-                  type="text"
-                  className="form-control mt-1"
-                  placeholder="Color"
-                  aria-label="telephone"
-                />
+                <select
+                  className="form-select mt-1"
+                  aria-label="Default select example"
+                  defaultValue="Color"
+                >
+                  <option value="1">Negro</option>
+                  <option value="2">Blanco</option>
+                  <option value="3">Blanco Perlado</option>
+                  <option value="4">Beige</option>
+                  <option value="5">Gris Plata</option>
+                  <option value="6">Gris Oscuro</option>
+                  <option value="7">Champagne</option>
+                  <option value="8">Amarillo</option>
+                  <option value="9">Azul</option>
+                  <option value="10">Rojo</option>
+                  <option value="11">Bordó</option>
+                  <option value="12">Otro</option>
+                </select>
               </div>
               <div className="col">
                 <select
@@ -244,42 +350,84 @@ export default function Home() {
             </div>
             <div className="row mt-2">
               <div className="col">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Combustible"
-                  aria-label="client"
-                />
+                <select
+                  className="form-select custom-select my-custom-select"
+                  aria-label="Default select example"
+                  defaultValue="Combustible"
+                  style={{background: "transparent"}}
+                >
+                  <option value="1">Nafta</option>
+                  <option value="2">Diesel</option>
+                  <option value="3">GNC</option>
+                  <option value="4">Eléctrico</option>
+                  <option value="5">Híbrido</option>
+                </select>
               </div>
               <div className="col">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Patente"
-                  aria-label="client"
-                />
+                <div class="form">
+                  <div class="form-group">
+                    <input
+                      type="text"
+                      name="patente"
+                      placeholder=" "
+                      id="patente"
+                      autocomplete="off"
+                      required
+                    />
+                    <label for="patente" class="label-name">
+                      <span class="content-name">Dominio</span>
+                    </label>
+                  </div>
+                </div>
               </div>
               <div className="col">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Kilometraje"
-                  aria-label="client"
-                />
+                <div class="form">
+                  <div class="form-group">
+                    <input
+                      type="text"
+                      name="km"
+                      placeholder=" "
+                      id="km"
+                      autocomplete="off"
+                      required
+                    />
+                    <label for="km" class="label-name">
+                      <span class="content-name">Kilometraje</span>
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
-            <input
-              type="text"
-              className="form-control mt-1"
-              placeholder="N° Chasis"
-              aria-label="client"
-            />
-            <input
-              type="text"
-              className="form-control mt-1"
-              placeholder="N° Motor"
-              aria-label="client"
-            />
+            <div class="form">
+              <div class="form-group">
+                <input
+                  type="text"
+                  name="chasis"
+                  placeholder=" "
+                  id="chasis"
+                  autocomplete="off"
+                  required
+                />
+                <label for="chasis" class="label-name">
+                  <span class="content-name">N° Chasis</span>
+                </label>
+              </div>
+            </div>
+            <div class="form">
+              <div class="form-group">
+                <input
+                  type="text"
+                  name="motor"
+                  placeholder=" "
+                  id="motor"
+                  autocomplete="off"
+                  required
+                />
+                <label for="patente" class="label-name">
+                  <span class="content-name">N° Motor</span>
+                </label>
+              </div>
+            </div>
             <div className="row mt-1">
               <div className="col mt-1">
                 Está alineado?
@@ -387,6 +535,7 @@ export default function Home() {
                         name="grupo-box3"
                         id="5-box"
                         className="input-tof"
+                        onChange={handleRadioChange}
                       />
                       <label for="5-box" className="labeltof">
                         NO
@@ -396,6 +545,7 @@ export default function Home() {
                         name="grupo-box3"
                         id="6-box"
                         className="input-tof"
+                        onChange={handleRadioChange}
                       />
                       <label for="6-box" className="labeltof">
                         SI
@@ -578,10 +728,11 @@ export default function Home() {
                   id="date"
                   name="date"
                   className="form-control"
+                  disabled={desactivarInput}
                 />
               </div>
             </div>
-            <div className="col">
+            <div className="col mt-2">
               <textarea
                 className="form-control"
                 placeholder="Observaciones"
@@ -2219,26 +2370,56 @@ export default function Home() {
           <div className="star-rating" dir="rtl" style={{ margin: "auto" }}>
             <div className="radio-group">
               <input type="radio" name="grupo-top" id="i-stars" />
-              <label for="i-stars" className="star">
+              <label
+                for="i-stars"
+                className="star"
+                checked={selectedOption === "i-stars"}
+                onChange={handleStarChange}
+              >
                 &#9733;
               </label>
               <input type="radio" name="grupo-top" id="ii-stars" />
-              <label for="ii-stars" className="star">
+              <label
+                for="ii-stars"
+                className="star"
+                checked={selectedOption === "ii-stars"}
+                onChange={handleStarChange}
+              >
                 &#9733;
               </label>
               <input type="radio" name="grupo-top" id="iii-stars" />
-              <label for="iii-stars" className="star">
+              <label
+                for="iii-stars"
+                className="star"
+                checked={selectedOption === "iii-stars"}
+                onChange={handleStarChange}
+              >
                 &#9733;
               </label>
               <input type="radio" name="grupo-top" id="iv-stars" />
-              <label for="iv-stars" className="star">
+              <label
+                for="iv-stars"
+                className="star"
+                checked={selectedOption === "iv-stars"}
+                onChange={handleStarChange}
+              >
                 &#9733;
               </label>
               <input type="radio" name="grupo-top" id="v-stars" />
-              <label for="v-stars" className="star">
+              <label
+                for="v-stars"
+                className="star"
+                checked={selectedOption === "v-stars"}
+                onChange={handleStarChange}
+              >
                 &#9733;
               </label>
             </div>
+            {selectedOption && (
+              <label htmlFor={selectedOption} className="selected-label">
+                Opción seleccionada: {selectedOption}
+              </label>
+            )}
           </div>
         </div>
         <hr className="mt-3" />

@@ -58,11 +58,10 @@
 
 .radio-group {
   display: flex;
-  
+
   align-items: center;
-  
+
   margin: auto;
-  
 }
 
 .input-tof {
@@ -85,4 +84,132 @@
   padding: 10px;
   text-transform: uppercase;
   transition: none;
+}
+
+.form {
+  height: auto;
+  position: relative;
+}
+
+.form-group {
+  position: relative;
+  height: 2.9rem;
+  overflow: hidden;
+}
+
+.form-group:not(:first-child) {
+  margin-top: 3rem;
+}
+.form input {
+  width: 100%;
+  height: 100%;
+  padding-top: 1rem;
+  border: none;
+  font-size: 1rem;
+  outline: none;
+}
+
+.form input:placeholder-shown + .label-name .content-name {
+  transform: translateY(1.45rem);
+  color: rgb(143, 142, 142);
+  font-size: 1rem;
+}
+
+.form input:placeholder-shown + .label-name::after {
+  transform: translateX(-100%);
+}
+
+.form input:not(:focus):invalid + .label-name::after {
+  border-bottom-color: #717272;
+}
+
+.form label {
+  position: absolute;
+  bottom: 0px;
+  left: 0%;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  border-bottom: 1px solid #6e6e6e;
+  border: none;
+  outline: none;
+  font-size: 22px;
+  padding: 8px 0;
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.form label::after {
+  content: "";
+  position: absolute;
+  left: 0px;
+  bottom: -3px;
+  height: 100%;
+  width: 100%;
+  border-bottom: 3px solid #087e8b;
+  transition: all 0.3s ease;
+  transform: translateX(0);
+}
+
+.content-name {
+  position: absolute;
+  left: 0;
+  transition: all 0.3s ease;
+  top: 0rem;
+  font-size: 0.8rem;
+  color: gray;
+}
+
+/* /* .box-input {
+  position: relative;
+  width: 100%;
+  margin: 0;
+} */
+input,
+.box-input .box {
+  position: relative;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 22px;
+  padding: 8px 0;
+  box-sizing: border-box;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  background: transparent;
+  z-index: 2;
+  transition: 0.9s;
+}
+input:focus,
+.box-input .box textarea:focus {
+  border-color: #087e8b;
+}
+.input-label {
+  position: absolute;
+  left: 115px;
+
+  color: #777;
+  transition: all 0.3s;
+  cursor: text;
+}
+.box-input:focus + label {
+  top: 5px;
+  left: 105px;
+  font-size: 12px;
+  color: #673ab7;
+}
+
+.form-select{
+  background: transparent;
+}
+
+.form-selec{
+  background: transparent;
+}
+.my-custom-select {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #000;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }

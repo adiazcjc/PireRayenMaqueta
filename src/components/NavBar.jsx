@@ -1,6 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-
+import FechaHoy from "./Fecha";
 export default function NavBar() {
   return (
     <nav
@@ -21,6 +21,7 @@ export default function NavBar() {
         >
           PIRERAYEN
         </a>
+
         <div className="collapse navbar-collapse show" id="navbarNav">
           <ul className="navbar-nav ms-auto">
             <li className="nav-item">
@@ -38,9 +39,8 @@ export default function NavBar() {
               </a>
             </li>
           </ul>
-          <hr />
-          <div style={{ backgroundColor: "#000000" }}></div>
         </div>
+        <FechaHoy />
       </div>
     </nav>
   );
