@@ -8,12 +8,11 @@ const FechaHoy = () => {
   };
 
   return (
-    <div
+    <div name="Fecha" value=""
       style={{
         color: "#E1E3EC",
         fontStyle: "oblique",
         fontSize: "12px",
-       
         textAlign: "left",
       }}
     >

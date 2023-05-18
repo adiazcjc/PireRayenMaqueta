@@ -1,15 +1,41 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
 import styles from "./Home.css";
 import NavBar from "./NavBar";
 import TodoList from "./List";
 import { useDispatch, useSelector } from "react-redux";
 import { getCars, filterModel, filterVersion, getClean } from "../actions";
-
+import {
+  PDFDownloadLink,
+  Document,
+  Page,
+  Text,
+  pdf,
+  StyleSheet,
+  Image,
+  View,
+} from "@react-pdf/renderer";
+import Swal from "sweetalert2";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import logoImage from "../images/pirerayen_logo.jpg";
+import "jspdf-autotable";
+import html2pdf from "html2pdf.js";
+import $ from "jquery";
 export default function Home() {
   const dispatch = useDispatch();
+  // useEffect(() => {
+  //   dispatch(getCars());
+  //   dispatch(getClean());
+  // }, [dispatch]);
+
   useEffect(() => {
     dispatch(getCars());
     dispatch(getClean());
+
+    setTimeout(() => {
+      generarPDF();
+    }, 0); // Llamar a la función generarPDF después de despachar las acciones
   }, [dispatch]);
   //probar
   const allCars = useSelector((state) => state.cars);
@@ -26,6 +52,21 @@ export default function Home() {
   const [marcaSeleccionada, setMarcaSeleccionada] = useState("");
   const [desactivarInput, setDesactivarInput] = useState(false);
   const [selectedOption, setSelectedOption] = useState("");
+  const [selectedValue, setSelectedValue] = useState("");
+  const [selectedValueColor, setSelectedValueColor] = useState("");
+  const [selectedValueModelo, setSelectedValueModelo] = useState("");
+  const [frontalImageURL, setFrontalImageURL] = useState("");
+  const [detrasImageURL, setDetrasImageURL] = useState("");
+  const [izquierdoImageURL, setIzquierdoImageURL] = useState("");
+  const [derechoImageURL, setDerechoImageURL] = useState("");
+  const [inputValueDominio, setInputValueDominio] = useState('');
+
+  const [formData, setFormData] = useState(null);
+  const [frontalImage, setFrontalImage] = useState(null);
+  const [detrasImage, setDetrasImage] = useState(null);
+  const [izquierdoImage, setIzquierdoImage] = useState(null);
+  const [derechoImage, setDerechoImage] = useState(null);
+
   if (allModels) {
     for (var i = 0; i < allModels.length; i++) {
       var arrayModels = allModels[i].modelo;
@@ -71,390 +112,1020 @@ export default function Home() {
     dispatch(filterVersion(e.target.value));
   }
 
+  const handleSelectChange = (event) => {
+    setSelectedValue(event.target.value);
+  };
+
+  const handleSelectChangeColor = (event) => {
+    setSelectedValueColor(event.target.value);
+  };
+  const handleSelectChangeModelo = (event) => {
+    setSelectedValueModelo(event.target.value);
+  };
+
+  const handleInputChangeDominio = (event) => {
+    const newValue = event.target.value.toUpperCase();
+    setInputValueDominio(newValue);
+  };
+
+  const handleKeyDown = (event) => {
+    const key = event.key;
+    const isNumericInput = /^\d$/.test(key);
+    const isMaxLengthReached = event.target.value.length >= 35;
+
+    if (isNumericInput || isMaxLengthReached) {
+      event.preventDefault();
+    }
+  };
+
+  const handleKeyPress = (event) => {
+    const keyCode = event.keyCode || event.which;
+    const keyValue = String.fromCharCode(keyCode);
+
+    const isNumericInput = /^\d$/.test(keyValue);
+
+    if (!isNumericInput) {
+      event.preventDefault();
+    }
+  };
+
+  const handleFrontalImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setFrontalImageURL(reader.result);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDetrasImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setDetrasImageURL(reader.result);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDerechoImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setDerechoImageURL(reader.result);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleIzquierdoImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setIzquierdoImageURL(reader.result);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const currentDate = new Date().toLocaleDateString();
+  const styles = StyleSheet.create({
+    page: {
+      padding: 40, // Margen interno de la página
+
+      marginLeft: 20, // Margen izquierdo
+      marginRight: 20, // Margen derecho
+      marginTop: 10, // Margen superior
+      marginBottom: 30, // Margen inferior
+    },
+    title: {
+      fontSize: 14,
+      marginBottom: 20,
+      textAlign: "center", // Alineación centrada del título
+      fontWeight: "bold", // Fuente en negrita
+      backgroundColor: "#012967",
+      color: "#F5F5F5",
+    },
+    formData: {
+      fontSize: 12,
+      marginBottom: 10, // Margen inferior entre líneas
+      lineHeight: 1.5,
+      fontWeight: "bold",
+    },
+    logoContainer: {
+      width: "100%",
+      backgroundColor: "#012967",
+      padding: 10,
+      marginBottom: 10,
+      flexDirection: "row",
+      justifyContent: "flex-end",
+    },
+    logo: {
+      width: 100,
+      height: 100,
+    },
+    imagesContainer: {
+      flexDirection: "row",
+      marginTop: 20,
+    },
+    formContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      marginBottom: 10,
+    },
+    column: {
+      flex: 1,
+      marginRight: 10,
+    },
+    columnTitle: {
+      fontWeight: "bold",
+      marginBottom: 5,
+    },
+    image: {
+      marginBottom: 10,
+      marginRight: 10,
+      maxWidth: "100%",
+      maxHeight: 200,
+    },
+    subTittle: {
+      fontSize: 13,
+      textAlign: "center", // Alineación centrada del título
+      fontWeight: "bold", // Fuente en negrita
+    },
+    date: {
+      fontSize: 12,
+      textAlign: "right", // Alineación centrada del título
+      fontWeight: "bold", // Fuente en negrita
+    },
+    separator: {
+      borderBottomColor: "#012967",
+      borderBottomWidth: 1,
+      marginVertical: 10,
+    },
+    footer: {
+      position: "fixed",
+      bottom: 30, // Ajusta la posición vertical según tus necesidades
+      left: 0,
+      right: 0,
+      textAlign: "center",
+    },
+  });
+
+  const generarPDF = () => {
+    const MyPDF = ({
+      formData1,
+      formData2,
+      formData3,
+      formData4,
+      formData5,
+      formData6,
+    }) => (
+      <Document>
+        <Page style={styles.page}>
+          <View style={styles.logoContainer}>
+            <Image src={logoImage} style={styles.logo} />
+          </View>
+          <Text style={styles.title}>
+            FORMULARIO DE TASACIÓN DE VEHÍCULOS USADOS
+          </Text>
+          <Text style={styles.date}>Fecha: {currentDate}</Text>
+          <Text style={styles.subTittle}>Información del cliente</Text>
+          <View style={styles.separator} />
+          <Text style={styles.formData}>{formData1}</Text>
+          <Text style={styles.subTittle}>Información del vehículo</Text>
+          <View style={styles.separator} />
+
+          <View style={styles.formContainer}>
+            <View style={styles.column}>
+              <Text style={styles.formData}>{formData2}</Text>
+            </View>
+            <View style={styles.column}>
+              <Text style={styles.formData}>{formData3}</Text>
+            </View>
+          </View>
+
+          <View style={styles.formContainer}>
+            <View style={styles.column}>
+              <Text style={styles.subTittle}>
+                Características y equipamientos
+              </Text>
+              <View style={styles.separator} />
+              <Text style={styles.formData}>{formData4}</Text>
+            </View>
+            <View style={styles.column}>
+              <Text style={styles.subTittle}>
+                Estado de conservación y desgaste
+              </Text>
+              <View style={styles.separator} />
+              <Text style={styles.formData}>{formData5}</Text>
+            </View>
+          </View>
+          <Text style={styles.subTittle}>Fotos del vehículo</Text>
+          <View style={styles.separator} />
+          <View style={styles.imagesContainer}>
+            <View style={styles.column}>
+              {frontalImage && (
+                <Image src={frontalImage} style={styles.image} />
+              )}
+              {izquierdoImage && (
+                <Image src={izquierdoImage} style={styles.image} />
+              )}
+            </View>
+            <View style={styles.column}>
+              {detrasImage && <Image src={detrasImage} style={styles.image} />}
+              {derechoImage && (
+                <Image src={derechoImage} style={styles.image} />
+              )}
+            </View>
+          </View>
+          <View style={styles.separator} />
+          <Text style={styles.formData}>{formData6}</Text>
+        </Page>
+      </Document>
+    );
+
+    const getFormData1 = () => {
+      const form = $("#myForm1"); // Obtener el formulario 1 por su ID
+      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 1
+
+      const serializedData = [];
+      formData.forEach((value, key) => {
+        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 1
+      });
+
+      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+    };
+
+    const getFormData2 = () => {
+      const form = $("#myForm2"); // Obtener el formulario 2 por su ID
+      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 2
+
+      const serializedData = [];
+      formData.forEach((value, key) => {
+        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 2
+      });
+
+      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+    };
+
+    const getFormData3 = () => {
+      const form = $("#myForm3"); // Obtener el formulario 3 por su ID
+      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 3
+
+      const serializedData = [];
+      formData.forEach((value, key) => {
+        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 3
+      });
+
+      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+    };
+
+    const getFormData4 = () => {
+      const form = $("#myForm4"); // Obtener el formulario 4 por su ID
+      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 4
+
+      const serializedData = [];
+      formData.forEach((value, key) => {
+        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 4
+      });
+
+      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+    };
+
+    const getFormData5 = () => {
+      const form = $("#myForm5"); // Obtener el formulario 4 por su ID
+      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 5
+
+      const serializedData = [];
+      formData.forEach((value, key) => {
+        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 5
+      });
+
+      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+    };
+
+    const getFormData6 = () => {
+      const form = $("#myForm6"); // Obtener el formulario 4 por su ID
+      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 6
+
+      const serializedData = [];
+      formData.forEach((value, key) => {
+        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 6
+      });
+
+      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+    };
+
+    const formData1 = getFormData1(); // Obtener los datos del formulario 1
+    const formData2 = getFormData2(); // Obtener los datos del formulario 2
+    const formData3 = getFormData3(); // Obtener los datos del formulario 3
+    const formData4 = getFormData4(); // Obtener los datos del formulario 4
+    const formData5 = getFormData5(); // Obtener los datos del formulario 5
+    const formData6 = getFormData6(); // Obtener los datos del formulario 6
+
+    return (
+      <MyPDF
+        formData1={formData1}
+        formData2={formData2}
+        formData3={formData3}
+        formData4={formData4}
+        formData5={formData5}
+        formData6={formData6}
+      />
+    );
+
+    //   const getFormData = () => {
+    //     const form = $("#myForm2"); // Obtener el formulario por su ID
+    //     const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario
+
+    //     const serializedData = [];
+    //     formData.forEach((value, key) => {
+    //       serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario
+    //     });
+
+    //     return serializedData.join("\n"); // Unir los datos serializados en un solo string
+    //   };
+
+    //   const formData = getFormData(); // Obtener los datos del formulario
+
+    //   return <MyPDF formData={formData} />;
+    // };
+
+    // const handleGenerarPDF = () => {
+    //   const pdf = generarPDF();
+    //   PDFDownloadLink.createPDF(pdf).download("PireRayenTasacion.pdf");
+  };
+
   return (
     <div className="containerHome">
+      {/* <form id="myForm"> */}
       <NavBar />
       <hr size="25px" color="black" />
       <div className="container-fluid text-center">
         <div className="row" style={{ padding: "1%" }}>
-          {/* INFORMACION DEL CLIENTE */}
-          <div className="col-md">
-            Información del cliente
-            <div class="form">
-              <div class="form-group">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder=" "
-                  id="name"
-                  autocomplete="off"
-                  required
-                />
-                <label for="name" class="label-name">
-                  <span class="content-name">Nombre del cliente</span>
-                </label>
-              </div>
-            </div>
-            {/* <input
-              type="text"
-              // className="form-control mt-3"
-              className="box-input"
-              aria-label="client"
-            />
-            <label for="text" className="input-label">
-              Cliente
-            </label> */}
-            <div className="row">
-              <div className="col">
-                <div class="form">
-                  <div class="form-group">
+          <form id="myForm1">
+            <div className="col-md divClient" id="divClient">
+              Información del cliente
+              <div className="mb-3">
+                <div className="form">
+                  <div className="form-group">
                     <input
                       type="text"
-                      name="tel"
+                      name="Nombre del cliente"
                       placeholder=" "
-                      id="tel"
-                      autocomplete="off"
-                      required
+                      pattern="[A-Za-z\s]+"
+                      maxLength={35}
+                      id="Nombre del cliente"
+                      autoComplete="off"
+        required
+        onKeyDown={handleKeyDown}
                     />
-                    <label for="tel" class="label-name">
-                      <span class="content-name">Teléfono</span>
+                    <label for="name" className="label-name">
+                      <span className="content-name">Nombre del cliente</span>
                     </label>
                   </div>
                 </div>
-              </div>
-              <div className="col">
-                <div class="form">
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      name="email"
-                      placeholder=" "
-                      id="email"
-                      autocomplete="off"
-                      required
-                    />
-                    <label for="email" class="label-name">
-                      <span class="content-name">Email</span>
-                    </label>
+                <div className="row">
+                  <div className="col">
+                    <div className="form">
+                      <div className="form-group">
+                        <input
+                          type="text"
+                          name="Teléfono"
+                          placeholder=" "
+                          id="tel"
+                          autoComplete="off"
+                          pattern="[0-9]*"
+                          maxLength={25}
+                          required
+                          onKeyPress={handleKeyPress}
+                        />
+                        <label for="tel" className="label-name">
+                          <span className="content-name">Teléfono</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="form">
+                      <div className="form-group">
+                        <input
+                          type="text"
+                          name="Email"
+                          placeholder=" "
+                          id="email"
+                          autoComplete="off"
+                          required
+                        />
+                        <label for="email" className="label-name">
+                          <span className="content-name">Email</span>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                {/* <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  className="form-control mt-1"
-                /> */}
               </div>
             </div>
-          </div>
-
+          </form>
           <hr className="mt-3" />
-          {/* INFORMACION DEL VEHICULO */}
-
           <div className="col-md">
-            Información del vehículo
-            <select
-              id="1"
-              className="form-select mt-3"
-              aria-label="Default select example"
-              onChange={(e) => handleFilterModel(e)}
-            >
-              <option value="" hidden name="cars">
-                Marca
-              </option>
-              {allCars?.map((el) => {
-                return (
-                  <option value={el.marca} key={el.id}>
-                    {el.marca}
-                  </option>
-                );
-              })}
-              <option value="otra">Otra</option>
-            </select>
-            {mostrarOtroSelect && (
-              <div>
-                <div class="form">
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      name="otro"
-                      placeholder=" "
-                      id="otro"
-                      autocomplete="off"
-                      required
-                    />
-                    <label for="otro" class="label-name">
-                      <span class="content-name">
-                        Ingrese otra marca / modelo
-                      </span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            )}
-            {
-              <select
-                id="2"
-                className="form-select mt-1"
-                aria-label="Default select example"
-                onChange={(e) => handleFilterVersion(e)}
-                disabled={disableSelects}
-              >
-                <option value="" hidden name="cars">
-                  Modelo
-                </option>
-                {arrayModels?.map((el) => {
-                  return (
-                    <option value={el.name} key={el.id}>
-                      {el.name}
+            <div>
+              <form id="myForm2">
+                <div className="mb-3">
+                  Información del vehículo
+                  <select
+                    id="myCustomSelect"
+                    name="Marca"
+                    className="form-control custom-select mt-3"
+                    aria-label="Default select example"
+                    onChange={(e) => handleFilterModel(e)}
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      borderBottom: "1px solid #ccc",
+                      backgroundImage:
+                        "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                      backgroundPosition: "right center",
+                      backgroundRepeat: "no-repeat",
+                      appearance: "none",
+                      WebkitAppearance: "none",
+                      MozAppearance: "none",
+                      paddingRight: "20px",
+                    }}
+                  >
+                    <option value="" hidden name="cars">
+                      Marca
                     </option>
-                  );
-                })}
-              </select>
-            }
-            {
-              <select
-                id="3"
-                className="form-select mt-1"
-                aria-label="Default select example"
-                disabled={disableSelects}
-              >
-                <option value="" hidden name="cars">
-                  Versión
-                </option>
-                {allVersions?.map((el) => {
-                  return (
-                    <option value={el} key={el}>
-                      {el}
-                    </option>
-                  );
-                })}
-              </select>
-            }
-            <div className="row">
-              <div className="col">
-                <select
-                  className="form-select mt-1"
-                  aria-label="Default select example"
-                  defaultValue="Color"
-                >
-                  <option value="1">Negro</option>
-                  <option value="2">Blanco</option>
-                  <option value="3">Blanco Perlado</option>
-                  <option value="4">Beige</option>
-                  <option value="5">Gris Plata</option>
-                  <option value="6">Gris Oscuro</option>
-                  <option value="7">Champagne</option>
-                  <option value="8">Amarillo</option>
-                  <option value="9">Azul</option>
-                  <option value="10">Rojo</option>
-                  <option value="11">Bordó</option>
-                  <option value="12">Otro</option>
-                </select>
-              </div>
-              <div className="col">
-                <select
-                  className="form-select mt-1"
-                  aria-label="Default select example"
-                  defaultValue="Año / Modelo"
-                >
-                  <option value="9">2000</option>
-                  <option value="6">2001</option>
-                  <option value="6">2002</option>
-                  <option value="6">2003</option>
-                  <option value="6">2004</option>
-                  <option value="6">2005</option>
-                  <option value="6">2006</option>
-                  <option value="6">2007</option>
-                  <option value="6">2008</option>
-                  <option value="6">2009</option>
-                  <option value="6">2010</option>
-                  <option value="6">2011</option>
-                  <option value="6">2012</option>
-                  <option value="6">2013</option>
-                  <option value="6">2014</option>
-                  <option value="6">2015</option>
-                  <option value="6">2016</option>
-                  <option value="6">2017</option>
-                  <option value="6">2018</option>
-                  <option value="6">2019</option>
-                  <option value="6">2020</option>
-                  <option value="6">2021</option>
-                  <option value="6">2022</option>
-                  <option value="6">2023</option>
-                </select>
-              </div>
-            </div>
-            <div className="row mt-1">
-              <div className="col">Puertas</div>
-              <div className="col">Cambios</div>
-            </div>
-            <div className="row">
-              <div className="col">
-                <div className="tof" dir="rtl">
-                  <div className="radio-group">
-                    <input
-                      type="radio"
-                      name="grupo-caja1"
-                      id="1-caja"
-                      className="input-tof"
-                    />
-                    <label for="1-caja" className="labeltof">
-                      3P
-                    </label>
-                    <input
-                      type="radio"
-                      name="grupo-caja1"
-                      id="2-caja"
-                      className="input-tof"
-                    />
-                    <label for="2-caja" className="labeltof">
-                      4P
-                    </label>
-                    <input
-                      type="radio"
-                      name="grupo-caja1"
-                      id="3-caja"
-                      className="input-tof"
-                    />
-                    <label for="3-caja" className="labeltof">
-                      5P
-                    </label>
+                    {allCars?.map((el) => {
+                      return (
+                        <option value={el.marca} key={el.id}>
+                          {el.marca}
+                        </option>
+                      );
+                    })}
+                    <option value="otra">Otra</option>
+                  </select>
+                  {mostrarOtroSelect && (
+                    <div>
+                      <div className="form">
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            name="Otra marca"
+                            placeholder=" "
+                            id="otro"
+                            autoComplete="off"
+                            required
+                          />
+                          <label for="otro" className="label-name">
+                            <span className="content-name">
+                              Ingrese otra marca / modelo
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {
+                    <select
+                      id="myCustomSelect"
+                      name="Modelo"
+                      className="form-control custom-select mt-1"
+                      aria-label="Default select example"
+                      onChange={(e) => handleFilterVersion(e)}
+                      disabled={disableSelects}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        borderBottom: "1px solid #ccc",
+                        backgroundImage:
+                          "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                        backgroundPosition: "right center",
+                        backgroundRepeat: "no-repeat",
+                        appearance: "none",
+                        WebkitAppearance: "none",
+                        MozAppearance: "none",
+                        paddingRight: "20px",
+                      }}
+                    >
+                      <option value="" hidden name="cars">
+                        Modelo
+                      </option>
+                      {arrayModels?.map((el) => {
+                        return (
+                          <option value={el.name} key={el.id}>
+                            {el.name}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  }
+                  {
+                    <select
+                      id="myCustomSelect"
+                      className="form-control custom-select mt-1"
+                      name="Versión"
+                      aria-label="Default select example"
+                      disabled={disableSelects}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        borderBottom: "1px solid #ccc",
+                        backgroundImage:
+                          "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                        backgroundPosition: "right center",
+                        backgroundRepeat: "no-repeat",
+                        appearance: "none",
+                        WebkitAppearance: "none",
+                        MozAppearance: "none",
+                        paddingRight: "20px",
+                      }}
+                    >
+                      <option value="" hidden name="cars">
+                        Versión
+                      </option>
+                      {allVersions?.map((el) => {
+                        return (
+                          <option value={el} key={el}>
+                            {el}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  }
+                  <div className="row">
+                    <div className="col mt-1">
+                      {
+                        <div>
+                          {selectedValueColor === "" ? (
+                            <label
+                              htmlFor="myCustomSelect"
+                              className="label-select"
+                              style={{ color: "#f5f5f5" }}
+                            >
+                              vacio
+                            </label>
+                          ) : (
+                            <label
+                              htmlFor="myCustomSelect"
+                              className="label-select"
+                            >
+                              Color
+                            </label>
+                          )}
+                          <select
+                            id="myCustomSelect"
+                            className="form-control custom-select mt-1"
+                            name="Color"
+                            aria-label="Default select example"
+                            value={selectedValueColor}
+                            onChange={handleSelectChangeColor}
+                            style={{
+                              background: "transparent",
+                              border: "none",
+                              borderBottom: "1px solid #ccc",
+                              backgroundImage:
+                                "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                              backgroundPosition: "right center",
+                              backgroundRepeat: "no-repeat",
+                              appearance: "none",
+                              WebkitAppearance: "none",
+                              MozAppearance: "none",
+                              paddingRight: "20px",
+                            }}
+                          >
+                            <option value="" hidden name="cars">
+                              Color
+                            </option>
+                            <option className="option-select" value="Negro">
+                              Negro
+                            </option>
+                            <option className="option-select" value="Blanco">
+                              Blanco
+                            </option>
+                            <option
+                              className="option-select"
+                              value="Blanco Perlado"
+                            >
+                              Blanco Perlado
+                            </option>
+                            <option className="option-select" value="Beige">
+                              Beige
+                            </option>
+                            <option
+                              className="option-select"
+                              value="Gris Plata"
+                            >
+                              Gris Plata
+                            </option>
+                            <option
+                              className="option-select"
+                              value="Gris Oscuro"
+                            >
+                              Gris Oscuro
+                            </option>
+                            <option className="option-select" value="Champagne">
+                              Champagne
+                            </option>
+                            <option className="option-select" value="Amarillo">
+                              Amarillo
+                            </option>
+                            <option className="option-select" value="Azul">
+                              Azul
+                            </option>
+                            <option className="option-select" value="Rojo">
+                              Rojo
+                            </option>
+                            <option className="option-select" value="Bordó">
+                              Bordó
+                            </option>
+                            <option className="option-select" value="Otro">
+                              Otro
+                            </option>
+                          </select>
+                        </div>
+                      }
+                    </div>
+                    <div className="col mt-1">
+                      {
+                        <div>
+                          {selectedValueModelo === "" ? (
+                            <label
+                              htmlFor="myCustomSelect"
+                              className="label-select"
+                              style={{ color: "#f5f5f5" }}
+                            >
+                              vacio
+                            </label>
+                          ) : (
+                            <label
+                              htmlFor="myCustomSelect"
+                              className="label-select"
+                            >
+                              Año / Modelo
+                            </label>
+                          )}
+                          <select
+                            id="myCustomSelect"
+                            className="form-control custom-select mt-1"
+                            aria-label="Default select example"
+                            name="Año de Modelo"
+                            onChange={handleSelectChangeModelo}
+                            style={{
+                              background: "transparent",
+                              border: "none",
+                              borderBottom: "1px solid #ccc",
+                              backgroundImage:
+                                "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                              backgroundPosition: "right center",
+                              backgroundRepeat: "no-repeat",
+                              appearance: "none",
+                              WebkitAppearance: "none",
+                              MozAppearance: "none",
+                              paddingRight: "20px",
+                            }}
+                          >
+                            <option value="" hidden name="cars">
+                              Modelo
+                            </option>
+                            <option className="option-select" value="2000">
+                              2000
+                            </option>
+                            <option className="option-select" value="2001">
+                              2001
+                            </option>
+                            <option className="option-select" value="2002">
+                              2002
+                            </option>
+                            <option className="option-select" value="2003">
+                              2003
+                            </option>
+                            <option className="option-select" value="2004">
+                              2004
+                            </option>
+                            <option className="option-select" value="2005">
+                              2005
+                            </option>
+                            <option className="option-select" value="2006">
+                              2006
+                            </option>
+                            <option className="option-select" value="2007">
+                              2007
+                            </option>
+                            <option className="option-select" value="2008">
+                              2008
+                            </option>
+                            <option className="option-select" value="2009">
+                              2009
+                            </option>
+                            <option className="option-select" value="2010">
+                              2010
+                            </option>
+                            <option className="option-select" value="2011">
+                              2011
+                            </option>
+                            <option className="option-select" value="2012">
+                              2012
+                            </option>
+                            <option className="option-select" value="2013">
+                              2013
+                            </option>
+                            <option className="option-select" value="2014">
+                              2014
+                            </option>
+                            <option className="option-select" value="2015">
+                              2015
+                            </option>
+                            <option className="option-select" value="2016">
+                              2016
+                            </option>
+                            <option className="option-select" value="2017">
+                              2017
+                            </option>
+                            <option className="option-select" value="2018">
+                              2018
+                            </option>
+                            <option className="option-select" value="2019">
+                              2019
+                            </option>
+                            <option className="option-select" value="2020">
+                              2020
+                            </option>
+                            <option className="option-select" value="2021">
+                              2021
+                            </option>
+                            <option className="option-select" value="2022">
+                              2022
+                            </option>
+                            <option className="option-select" value="2023">
+                              2023
+                            </option>
+                          </select>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  <div className="row mt-1">
+                    <div className="col">Puertas</div>
+                    <div className="col">Transmisión</div>
+                  </div>
+                  <div className="row">
+                    <div className="col">
+                      <div className="tof-one" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Puertas"
+                            id="1-caja"
+                            className="input-tof"
+                            value="3P"
+                          />
+                          <label for="1-caja" className="labeltof">
+                            3P
+                          </label>
+                          <input
+                            type="radio"
+                            name="Puertas"
+                            id="2-caja"
+                            className="input-tof"
+                            value="4P"
+                          />
+                          <label for="2-caja" className="labeltof">
+                            4P
+                          </label>
+                          <input
+                            type="radio"
+                            name="Puertas"
+                            id="3-caja"
+                            className="input-tof"
+                            value="5P"
+                          />
+                          <label for="3-caja" className="labeltof">
+                            5P
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col">
+                      <div className="tof-one" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Transmisión"
+                            id="4-caja"
+                            className="input-tof"
+                            value="Automática"
+                          />
+                          <label for="4-caja" className="labeltof">
+                            A
+                          </label>
+                          <input
+                            type="radio"
+                            name="Transmisión"
+                            id="5-caja"
+                            className="input-tof"
+                            value="Manual"
+                          />
+                          <label for="5-caja" className="labeltof">
+                            M
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row mt-2">
+                    <div className="col">
+                      {
+                        <div>
+                          {selectedValue === "" ? (
+                            <label
+                              htmlFor="myCustomSelect"
+                              className="label-select"
+                              style={{ color: "#f5f5f5" }}
+                            >
+                              vacio
+                            </label>
+                          ) : (
+                            <label
+                              htmlFor="myCustomSelect"
+                              className="label-select"
+                            >
+                              Combustible
+                            </label>
+                          )}
+                          <select
+                            id="myCustomSelect"
+                            className="form-control custom-select"
+                            aria-label="Default select example"
+                            name="Combustible"
+                            value={selectedValue}
+                            onChange={handleSelectChange}
+                            style={{
+                              background: "transparent",
+                              border: "none",
+                              borderBottom: "1px solid #ccc",
+                              backgroundImage:
+                                "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                              backgroundPosition: "right center",
+                              backgroundRepeat: "no-repeat",
+                              appearance: "none",
+                              WebkitAppearance: "none",
+                              MozAppearance: "none",
+                              paddingRight: "20px",
+                            }}
+                          >
+                            <option value="" hidden name="cars">
+                              Combustible
+                            </option>
+                            <option className="option-select" value="Nafta">
+                              Nafta
+                            </option>
+                            <option className="option-select" value="Diesel">
+                              Diesel
+                            </option>
+                            <option className="option-select" value="GNC">
+                              GNC
+                            </option>
+                            <option
+                              className="option-select"
+                              value="Nafta y GNC"
+                            >
+                              Nafta y GNC
+                            </option>
+                            <option className="option-select" value="Eléctrico">
+                              Eléctrico
+                            </option>
+                            <option className="option-select" value="Híbrido">
+                              Híbrido
+                            </option>
+                          </select>
+                        </div>
+                      }
+                    </div>
+                    <div className="col">
+                      <div className="form">
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            name="Dominio"
+                            placeholder=" "
+                            maxLength={7}
+                            id="patente"
+                            autoComplete="off"
+                            value={inputValueDominio}
+                            onChange={handleInputChangeDominio}
+                            required
+                          />
+                          <label for="patente" className="label-name">
+                            <span className="content-name">Dominio</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col ">
+                      <div className="form">
+                        <div className="form-group">
+                          <input
+                            type="text"
+                            name="Kilometraje"
+                            placeholder=" "
+                            id="km"
+                            autoComplete="off"
+                            pattern="[0-9]*"
+                            maxLength={7}
+                            required
+                            onKeyPress={handleKeyPress}
+                          />
+                          <label for="km" className="label-name">
+                            <span className="content-name">Kilometraje</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="col">
-                <div className="tof" dir="rtl">
-                  <div className="radio-group">
-                    <input
-                      type="radio"
-                      name="grupo-caja2"
-                      id="4-caja"
-                      className="input-tof"
-                    />
-                    <label for="4-caja" className="labeltof">
-                      A
-                    </label>
-                    <input
-                      type="radio"
-                      name="grupo-caja2"
-                      id="5-caja"
-                      className="input-tof"
-                    />
-                    <label for="5-caja" className="labeltof">
-                      M
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <select
-                  className="form-select custom-select my-custom-select"
-                  aria-label="Default select example"
-                  defaultValue="Combustible"
-                  style={{background: "transparent"}}
-                >
-                  <option value="1">Nafta</option>
-                  <option value="2">Diesel</option>
-                  <option value="3">GNC</option>
-                  <option value="4">Eléctrico</option>
-                  <option value="5">Híbrido</option>
-                </select>
-              </div>
-              <div className="col">
-                <div class="form">
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      name="patente"
-                      placeholder=" "
-                      id="patente"
-                      autocomplete="off"
-                      required
-                    />
-                    <label for="patente" class="label-name">
-                      <span class="content-name">Dominio</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div className="col">
-                <div class="form">
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      name="km"
-                      placeholder=" "
-                      id="km"
-                      autocomplete="off"
-                      required
-                    />
-                    <label for="km" class="label-name">
-                      <span class="content-name">Kilometraje</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="form">
-              <div class="form-group">
-                <input
-                  type="text"
-                  name="chasis"
-                  placeholder=" "
-                  id="chasis"
-                  autocomplete="off"
-                  required
-                />
-                <label for="chasis" class="label-name">
-                  <span class="content-name">N° Chasis</span>
-                </label>
-              </div>
-            </div>
-            <div class="form">
-              <div class="form-group">
-                <input
-                  type="text"
-                  name="motor"
-                  placeholder=" "
-                  id="motor"
-                  autocomplete="off"
-                  required
-                />
-                <label for="patente" class="label-name">
-                  <span class="content-name">N° Motor</span>
-                </label>
-              </div>
-            </div>
-            <div className="row mt-1">
-              <div className="col mt-1">
-                Está alineado?
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
+              </form>
+              <form id="myForm3">
+                <div>
+                  {/* HASTA ACA */}
+                  <div className="form mt-2">
+                    <div className="form-group">
                       <input
-                        type="radio"
-                        name="grupo-box1"
-                        id="1-box"
-                        className="input-tof"
+                        type="text"
+                        name="N° de Chasis"
+                        placeholder=" "
+                        id="chasis"
+                        autoComplete="off"
+                        pattern="[0-9]*"
+                        maxLength={25}
+                        required
+                        onKeyPress={handleKeyPress}
                       />
-                      <label for="1-box" className="labeltof">
-                        NO
-                      </label>
-                      <input
-                        type="radio"
-                        name="grupo-box1"
-                        id="2-box"
-                        className="input-tof"
-                      />
-                      <label for="2-box" className="labeltof">
-                        SI
+                      <label for="chasis" className="label-name">
+                        <span className="content-name">N° Chasis</span>
                       </label>
                     </div>
                   </div>
-                  {/* <div className="row">
+                  <div className="form mt-2">
+                    <div className="form-group">
+                      <input
+                        type="text"
+                        name="N° de Motor"
+                        placeholder=" "
+                        id="motor"
+                        autoComplete="off"
+                        pattern="[0-9]*"
+                        maxLength={25}
+                        required
+                        onKeyPress={handleKeyPress}
+                      />
+                      <label for="patente" className="label-name">
+                        <span className="content-name">N° Motor</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div className="row mt-3">
+                    <div className="col mt-1">
+                      Está alineado?
+                      <div className="col">
+                        <div className="tof-one" dir="rtl">
+                          <div className="radio-group">
+                            <input
+                              type="radio"
+                              name="Está alineado?"
+                              id="1-box"
+                              className="input-tof"
+                              value="No"
+                            />
+                            <label for="1-box" className="labeltof">
+                              NO
+                            </label>
+                            <input
+                              type="radio"
+                              name="Está alineado?"
+                              id="2-box"
+                              className="input-tof"
+                              value="Si"
+                            />
+                            <label for="2-box" className="labeltof">
+                              SI
+                            </label>
+                          </div>
+                        </div>
+                        {/* <div className="row">
                     <div className="col mt-1">
                       <p className="text-end">No</p>
                     </div>
@@ -474,34 +1145,36 @@ export default function Home() {
                       <p className="text-start">Si</p>
                     </div>
                   </div> */}
-                </div>
-              </div>
-              <div className="col mt-1">
-                Tiene las revisiones?
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-box2"
-                        id="3-box"
-                        className="input-tof"
-                      />
-                      <label for="3-box" className="labeltof">
-                        NO
-                      </label>
-                      <input
-                        type="radio"
-                        name="grupo-box2"
-                        id="4-box"
-                        className="input-tof"
-                      />
-                      <label for="4-box" className="labeltof">
-                        SI
-                      </label>
+                      </div>
                     </div>
-                  </div>
-                  {/* <div className="row">
+                    <div className="col mt-1">
+                      Tiene las revisiones?
+                      <div className="col">
+                        <div className="tof-one" dir="rtl">
+                          <div className="radio-group">
+                            <input
+                              type="radio"
+                              name="Tiene las revisiones?"
+                              id="3-box"
+                              className="input-tof"
+                              value="No"
+                            />
+                            <label for="3-box" className="labeltof">
+                              NO
+                            </label>
+                            <input
+                              type="radio"
+                              name="Tiene las revisiones?"
+                              id="4-box"
+                              className="input-tof"
+                              value="Si"
+                            />
+                            <label for="4-box" className="labeltof">
+                              SI
+                            </label>
+                          </div>
+                        </div>
+                        {/* <div className="row">
                     <div className="col mt-1">
                       <p className="text-end">No</p>
                     </div>
@@ -521,38 +1194,40 @@ export default function Home() {
                       <p className="text-start">Si</p>
                     </div>
                   </div> */}
-                </div>
-              </div>
-            </div>
-            <div className="row mt-1">
-              <div className="col mt-1">
-                Está en garantía?
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-box3"
-                        id="5-box"
-                        className="input-tof"
-                        onChange={handleRadioChange}
-                      />
-                      <label for="5-box" className="labeltof">
-                        NO
-                      </label>
-                      <input
-                        type="radio"
-                        name="grupo-box3"
-                        id="6-box"
-                        className="input-tof"
-                        onChange={handleRadioChange}
-                      />
-                      <label for="6-box" className="labeltof">
-                        SI
-                      </label>
+                      </div>
                     </div>
                   </div>
-                  {/* <div className="row">
+                  <div className="row mt-1">
+                    <div className="col mt-1">
+                      Está en garantía?
+                      <div className="col">
+                        <div className="tof-one" dir="rtl">
+                          <div className="radio-group">
+                            <input
+                              type="radio"
+                              name="Está en garantía?"
+                              id="5-box"
+                              className="input-tof"
+                              value="No"
+                              onChange={handleRadioChange}
+                            />
+                            <label for="5-box" className="labeltof">
+                              NO
+                            </label>
+                            <input
+                              type="radio"
+                              name="Está en garantía?"
+                              id="6-box"
+                              className="input-tof"
+                              value="Si"
+                              onChange={handleRadioChange}
+                            />
+                            <label for="6-box" className="labeltof">
+                              SI
+                            </label>
+                          </div>
+                        </div>
+                        {/* <div className="row">
                     <div className="col mt-1">
                       <p className="text-end">No</p>
                     </div>
@@ -572,34 +1247,36 @@ export default function Home() {
                       <p className="text-start">Si</p>
                     </div>
                   </div> */}
-                </div>
-              </div>
-              <div className="col mt-1">
-                Tiene los manuales?
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-box4"
-                        id="7-box"
-                        className="input-tof"
-                      />
-                      <label for="7-box" className="labeltof">
-                        NO
-                      </label>
-                      <input
-                        type="radio"
-                        name="grupo-box4"
-                        id="8-box"
-                        className="input-tof"
-                      />
-                      <label for="8-box" className="labeltof">
-                        SI
-                      </label>
+                      </div>
                     </div>
-                  </div>
-                  {/* <div className="row">
+                    <div className="col mt-1">
+                      Tiene los manuales?
+                      <div className="col">
+                        <div className="tof-one" dir="rtl">
+                          <div className="radio-group">
+                            <input
+                              type="radio"
+                              name="Tiene los manuales?"
+                              id="7-box"
+                              value="No"
+                              className="input-tof"
+                            />
+                            <label for="7-box" className="labeltof">
+                              NO
+                            </label>
+                            <input
+                              type="radio"
+                              name="Tiene los manuales?"
+                              id="8-box"
+                              value="Si"
+                              className="input-tof"
+                            />
+                            <label for="8-box" className="labeltof">
+                              SI
+                            </label>
+                          </div>
+                        </div>
+                        {/* <div className="row">
                     <div className="col mt-1">
                       <p className="text-end">No</p>
                     </div>
@@ -619,36 +1296,38 @@ export default function Home() {
                       <p className="text-start">Si</p>
                     </div>
                   </div> */}
-                </div>
-              </div>
-            </div>
-            <div className="row mt-1">
-              <div className="col mt-1">
-                Tiene otra llave?
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-box5"
-                        id="9-box"
-                        className="input-tof"
-                      />
-                      <label for="9-box" className="labeltof">
-                        NO
-                      </label>
-                      <input
-                        type="radio"
-                        name="grupo-box5"
-                        id="10-box"
-                        className="input-tof"
-                      />
-                      <label for="10-box" className="labeltof">
-                        SI
-                      </label>
+                      </div>
                     </div>
                   </div>
-                  {/* <div className="row">
+                  <div className="row mt-1">
+                    <div className="col mt-1">
+                      Tiene otra llave?
+                      <div className="col">
+                        <div className="tof-one" dir="rtl">
+                          <div className="radio-group">
+                            <input
+                              type="radio"
+                              name="Tiene otra llave?"
+                              id="9-box"
+                              value="No"
+                              className="input-tof"
+                            />
+                            <label for="9-box" className="labeltof">
+                              NO
+                            </label>
+                            <input
+                              type="radio"
+                              name="Tiene otra llave?"
+                              id="10-box"
+                              value="Si"
+                              className="input-tof"
+                            />
+                            <label for="10-box" className="labeltof">
+                              SI
+                            </label>
+                          </div>
+                        </div>
+                        {/* <div className="row">
                     <div className="col mt-1">
                       <p className="text-end">No</p>
                     </div>
@@ -668,34 +1347,36 @@ export default function Home() {
                       <p className="text-start">Si</p>
                     </div>
                   </div> */}
-                </div>
-              </div>
-              <div className="col mt-1">
-                Único dueño?
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-box6"
-                        id="11-box"
-                        className="input-tof"
-                      />
-                      <label for="11-box" className="labeltof">
-                        NO
-                      </label>
-                      <input
-                        type="radio"
-                        name="grupo-box6"
-                        id="12-box"
-                        className="input-tof"
-                      />
-                      <label for="12-box" className="labeltof">
-                        SI
-                      </label>
+                      </div>
                     </div>
-                  </div>
-                  {/* <div className="row">
+                    <div className="col mt-1">
+                      Único dueño?
+                      <div className="col">
+                        <div className="tof-one" dir="rtl">
+                          <div className="radio-group">
+                            <input
+                              type="radio"
+                              name="Único dueño?"
+                              id="11-box"
+                              value="No"
+                              className="input-tof"
+                            />
+                            <label for="11-box" className="labeltof">
+                              NO
+                            </label>
+                            <input
+                              type="radio"
+                              name="Único dueño?"
+                              id="12-box"
+                              value="Si"
+                              className="input-tof"
+                            />
+                            <label for="12-box" className="labeltof">
+                              SI
+                            </label>
+                          </div>
+                        </div>
+                        {/* <div className="row">
                     <div className="col mt-1">
                       <p className="text-end">No</p>
                     </div>
@@ -715,1718 +1396,2311 @@ export default function Home() {
                       <p className="text-start">Si</p>
                     </div>
                   </div> */}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row mt-3">
+                    <div className="col mt-0">
+                      <p>Vencimiento de garantía:</p>
+                    </div>
+                    <div className="col">
+                      <input
+                        type="date"
+                        id="date"
+                        name="Vencimiento de garantía"
+                        className="form-control"
+                        disabled={desactivarInput}
+                      />
+                    </div>
+                  </div>
+                  <div className="col mt-2">
+                    <div className="form-floating">
+                      <textarea
+                        className="form-control"
+                        name="Observaciones"
+                        placeholder="Observaciones"
+                        id="floatingTextarea2"
+                        style={{
+                          height: "100px",
+                          backgroundColor: "transparent",
+                        }}
+                      ></textarea>
+                      <label for="floatingTextarea2">Observaciones</label>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-3">
-              <div className="col mt-0">
-                <p>Vencimiento de garantía:</p>
-              </div>
-              <div className="col">
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  className="form-control"
-                  disabled={desactivarInput}
-                />
-              </div>
-            </div>
-            <div className="col mt-2">
-              <textarea
-                className="form-control"
-                placeholder="Observaciones"
-                id="floatingTextarea2"
-                style={{ height: "100px" }}
-              ></textarea>
+              </form>
             </div>
           </div>
 
           <hr className="mt-3" />
 
           <div className="col-md" style={{ margin: "auto" }}>
-            Características y equipamientos
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    ABS
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Airbag
-                    </label>
+            <form id="myForm4">
+              <div>
+                Características y equipamientos
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        name="ABS"
+                        type="checkbox"
+                        value="Si contiene"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        ABS
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          name="Airbag"
+                          type="checkbox"
+                          value="Si contiene"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Airbag
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Alarma en la llave
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          name="Alarma en llave"
+                          value="Si contiene"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Alarma en la llave
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          name="AC Convencional"
+                          type="checkbox"
+                          value="Si contiene"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          AC Convenc.
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      AC Convenc.
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        name="Alarma en llavero"
+                        type="checkbox"
+                        value="Si contiene"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Alarma en llavero
+                      </label>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Alarma en llavero
-                  </label>
-                </div>
-              </div>
 
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Climatizador
-                    </label>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          name="Climatizador"
+                          type="checkbox"
+                          value="Si contiene"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Climatizador
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Dirección
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Blindado
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        name="Dirección"
+                        value="Si contiene"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Dirección
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          name="Blindado"
+                          value="Si contiene"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Blindado
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    CD Player
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Multimedia
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        name="CD Player"
+                        value="Si contiene"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        CD Player
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Multimedia"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Multimedia
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Butacas de cuero
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Butacas de cuero"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Butacas de cuero
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Comp. de abordo
-                    </label>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Comp. de abordo"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Comp. de abordo
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Limpiador trasero
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Desemp. trasero
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Si contiene"
+                        name="Limpiador trasero"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Limpiador trasero
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Desemp. trasero"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Desemp. trasero
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Aire caliente
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Techo solar
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Si contiene"
+                        name="Aire caliente"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Aire caliente
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Techo solar"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Techo solar
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Ruedas de aleación
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Ruedas de aleación"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Ruedas de aleación
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Trabas eléctricas
-                    </label>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Trabas eléctricas"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Trabas eléctricas
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Vidrios eléctricos 2P
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Vidrios eléctricos 4P
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Si contiene"
+                        name="Vidrios eléctricos 2P"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Vidrios eléctricos 2P
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Vidrios eléctricos 4P"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Vidrios eléctricos 4P
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Ctrl de tracción
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Tracción 4x4
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Si contiene"
+                        name="Control de tracción"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Ctrl de tracción
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Tracción 4x4"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Tracción 4x4
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Ctrl de estabilidad
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          name="Ctrl de estabilidad"
+                          value="Si contiene"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Ctrl de estabilidad
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Triángulo
-                    </label>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Triángulo"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Triángulo
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Cricket
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Llave de rueda
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Si contiene"
+                        name="Cricket"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Cricket
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Llave de rueda"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Llave de rueda
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Cámara de estac.
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Espejos eléctricos
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        name="Cámara de estacionamiento"
+                        value="Si contiene"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Cámara de estac.
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Espejos eléctricos"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Espejos eléctricos
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Sensor de estac.
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Sensor de estacionamiento"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Sensor de estac.
+                        </label>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Capota marítima
-                    </label>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Capota marítima"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Capota marítima
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Barras antivuelco
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Faroles auxiliares
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Si contiene"
+                        name="Barras antivuelco"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Barras antivuelco
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Faroles auxiliares"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Faroles auxiliares
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Sensor de lluvia
-                  </label>
-                </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Sensor de faroles
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Si contiene"
+                        name="Sensor de lluvia"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Sensor de lluvia
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Sensor de faroles"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Sensor de faroles
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Cruise control
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Cruise control"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Cruise control
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col">
+                    <div className="col">
+                      <div className="form-check m-1">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          value="Si contiene"
+                          name="Butacas con regulacion eléctrica"
+                          id="defaultCheck1"
+                          style={{ backgroundColor: "#087E8B" }}
+                        />
+                        <label className="form-check-label" for="defaultCheck1">
+                          Butacas con reg elec
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="col">
-                <div className="col">
-                  <div className="form-check m-1">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      value=""
-                      id="defaultCheck1"
-                      style={{ backgroundColor: "#087E8B" }}
-                    />
-                    <label className="form-check-label" for="defaultCheck1">
-                      Butacas con reg elec
-                    </label>
+                <div className="row mt-2">
+                  <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        value="Si contiene"
+                        name="Entrada USB/SD CARD/AUX/BT"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Entrada USB/SD CARD/AUX/BT
+                      </label>
+                    </div>
                   </div>
+                  <div className="col"></div>
                 </div>
               </div>
-            </div>
-            <div className="row mt-2">
-              <div className="col">
-                <div className="form-check m-1">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    value=""
-                    id="defaultCheck1"
-                    style={{ backgroundColor: "#087E8B" }}
-                  />
-                  <label className="form-check-label" for="defaultCheck1">
-                    Entrada USB/SD CARD/AUX/BT
-                  </label>
-                </div>
-              </div>
-              <div className="col"></div>
-            </div>
+            </form>
             <hr className="mt-3" />
-            <div className="col-md">
-              Estado de conservación y desgaste
-              <div className="row mt-2">
-                <div className="col mt-3">
-                  <p>Neumático D.I.</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-3" id="1-stars" />
-                      <label for="1-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-3" id="2-stars" />
-                      <label for="2-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-3" id="3-stars" />
-                      <label for="3-stars" className="star">
-                        &#9733;
-                      </label>
+            <div>
+              <form id="myForm5">
+                <div className="col-md">
+                  Estado de conservación y desgaste
+                  <div className="row mt-3">
+                    <div className="col">
+                      <p style={{ color: "#087E8B" }}>Especificaciones</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating">
+                        <div className="radio-group">
+                          <p style={{ fontSize: "16px", color: "#087E8B" }}>
+                            (M) (R) (B)
+                          </p>
+                        </div>
+                        <hr />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Neumático D.D.</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-4" id="4-stars" />
-                      <label for="4-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-4" id="5-stars" />
-                      <label for="5-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-4" id="6-stars" />
-                      <label for="6-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Neumático D.I.</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Neumático D.I."
+                            id="1-stars"
+                            value="Bueno"
+                          />
+                          <label for="1-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Neumático D.I."
+                            id="2-stars"
+                            value="Regular"
+                          />
+                          <label for="2-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Neumático D.I."
+                            id="3-stars"
+                            value="Malo"
+                          />
+                          <label for="3-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Neumático T.I.</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-5" id="7-stars" />
-                      <label for="7-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-5" id="8-stars" />
-                      <label for="8-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-5" id="9-stars" />
-                      <label for="9-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Neumático D.D.</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Neumático D.D."
+                            id="4-stars"
+                            value="Bueno"
+                          />
+                          <label for="4-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Neumático D.D."
+                            id="5-stars"
+                            value="Regular"
+                          />
+                          <label for="5-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Neumático D.D."
+                            id="6-stars"
+                            value="Malo"
+                          />
+                          <label for="6-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Neumático T.D.</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-6" id="10-stars" />
-                      <label for="10-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-6" id="11-stars" />
-                      <label for="11-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-6" id="12-stars" />
-                      <label for="12-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Neumático T.I.</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Neumático T.I."
+                            id="7-stars"
+                            value="Bueno"
+                          />
+                          <label for="7-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Neumático T.I."
+                            id="8-stars"
+                            value="Regular"
+                          />
+                          <label for="8-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Neumático T.I."
+                            id="9-stars"
+                            value="Malo"
+                          />
+                          <label for="9-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Neumático Repuesto</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-7" id="13-stars" />
-                      <label for="13-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-7" id="14-stars" />
-                      <label for="14-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-7" id="15-stars" />
-                      <label for="15-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Neumático T.D.</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Neumático T.D."
+                            id="10-stars"
+                            value="Bueno"
+                          />
+                          <label for="10-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Neumático T.D."
+                            id="11-stars"
+                            value="Regular"
+                          />
+                          <label for="11-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Neumático T.D."
+                            id="12-stars"
+                            value="Malo"
+                          />
+                          <label for="12-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Limp. Parabrisa</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-8" id="16-stars" />
-                      <label for="16-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-8" id="17-stars" />
-                      <label for="17-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-8" id="18-stars" />
-                      <label for="18-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Neumático Repuesto</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Neumático Repuesto"
+                            id="13-stars"
+                            value="Bueno"
+                          />
+                          <label for="13-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Neumático Repuesto"
+                            id="14-stars"
+                            value="Regular"
+                          />
+                          <label for="14-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Neumático Repuesto"
+                            id="15-stars"
+                            value="Malo"
+                          />
+                          <label for="15-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Rociador Limpiaparabrisa</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-9" id="19-stars" />
-                      <label for="19-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-9" id="20-stars" />
-                      <label for="20-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-9" id="21-stars" />
-                      <label for="21-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Limp. Parabrisa</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Limpia Parabrisa"
+                            id="16-stars"
+                            value="Bueno"
+                          />
+                          <label for="16-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Limpia Parabrisa"
+                            id="17-stars"
+                            value="Regular"
+                          />
+                          <label for="17-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Limpia Parabrisa"
+                            id="18-stars"
+                            value="Malo"
+                          />
+                          <label for="18-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Aire Acondicionado</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-10" id="22-stars" />
-                      <label for="22-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-10" id="23-stars" />
-                      <label for="23-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-10" id="24-stars" />
-                      <label for="24-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Rociador Limpiaparabrisa</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Rociador Limpiaparabrisa"
+                            id="19-stars"
+                            value="Bueno"
+                          />
+                          <label for="19-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Rociador Limpiaparabrisa"
+                            id="20-stars"
+                            value="Regular"
+                          />
+                          <label for="20-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Rociador Limpiaparabrisa"
+                            id="21-stars"
+                            value="Malo"
+                          />
+                          <label for="21-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Intermitentes</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-11" id="25-stars" />
-                      <label for="25-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-11" id="26-stars" />
-                      <label for="26-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-11" id="27-stars" />
-                      <label for="27-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Aire Acondicionado</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Aire Acondicionado"
+                            id="22-stars"
+                            value="Bueno"
+                          />
+                          <label for="22-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Aire Acondicionado"
+                            id="23-stars"
+                            value="Regular"
+                          />
+                          <label for="23-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Aire Acondicionado"
+                            id="24-stars"
+                            value="Malo"
+                          />
+                          <label for="24-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Luces/Farol/Interno</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-12" id="28-stars" />
-                      <label for="28-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-12" id="29-stars" />
-                      <label for="29-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-12" id="30-stars" />
-                      <label for="30-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Intermitentes</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Intermitentes"
+                            id="25-stars"
+                            value="Bueno"
+                          />
+                          <label for="25-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Intermitentes"
+                            id="26-stars"
+                            value="Regular"
+                          />
+                          <label for="26-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Intermitentes"
+                            id="27-stars"
+                            value="Malo"
+                          />
+                          <label for="27-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Motor general</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-13" id="31-stars" />
-                      <label for="31-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-13" id="32-stars" />
-                      <label for="32-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-13" id="33-stars" />
-                      <label for="33-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Luces/Farol/Interno</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Luces/Farol/Interno"
+                            id="28-stars"
+                            value="Bueno"
+                          />
+                          <label for="28-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Luces/Farol/Interno"
+                            id="29-stars"
+                            value="Regular"
+                          />
+                          <label for="29-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Luces/Farol/Interno"
+                            id="30-stars"
+                            value="Malo"
+                          />
+                          <label for="30-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Acción Embrague</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-14" id="34-stars" />
-                      <label for="34-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-14" id="35-stars" />
-                      <label for="35-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-14" id="36-stars" />
-                      <label for="36-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Motor general</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Motor general"
+                            id="31-stars"
+                            value="Bueno"
+                          />
+                          <label for="31-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Motor general"
+                            id="32-stars"
+                            value="Regular"
+                          />
+                          <label for="32-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Motor general"
+                            id="33-stars"
+                            value="Malo"
+                          />
+                          <label for="33-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Pastillas de freno</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-15" id="37-stars" />
-                      <label for="37-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-15" id="38-stars" />
-                      <label for="38-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-15" id="39-stars" />
-                      <label for="39-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Acción Embrague</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Acción Embrague"
+                            id="34-stars"
+                            value="Bueno"
+                          />
+                          <label for="34-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción Embrague"
+                            id="35-stars"
+                            value="Regular"
+                          />
+                          <label for="35-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción Embrague"
+                            id="36-stars"
+                            value="Malo"
+                          />
+                          <label for="36-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Discos de freno</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-16" id="40-stars" />
-                      <label for="40-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-16" id="41-stars" />
-                      <label for="41-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-16" id="42-stars" />
-                      <label for="42-stars" className="star">
-                        &#9733;
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Pastillas de freno</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Pastillas de freno"
+                            id="37-stars"
+                            value="Bueno"
+                          />
+                          <label for="37-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Pastillas de freno"
+                            id="38-stars"
+                            value="Regular"
+                          />
+                          <label for="38-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Pastillas de freno"
+                            id="39-stars"
+                            value="Malo"
+                          />
+                          <label for="39-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Fuga de frenos</p>
-                </div>
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-17"
-                        id="43-stars"
-                        className="input-tof"
-                      />
-                      <label for="43-stars" className="labeltof">
-                        NO
-                      </label>
-                      {/* <input type="radio" name="grupo-17" id="101-stars" />
-                      <label for="101-stars" className="star">
-                        &#9733;
-                      </label> */}
-                      <input
-                        type="radio"
-                        name="grupo-17"
-                        id="45-stars"
-                        className="input-tof"
-                      />
-                      <label for="45-stars" className="labeltof">
-                        SI
-                      </label>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Discos de freno</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Discos de freno"
+                            id="40-stars"
+                            value="Bueno"
+                          />
+                          <label for="40-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Discos de freno"
+                            id="41-stars"
+                            value="Regular"
+                          />
+                          <label for="41-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Discos de freno"
+                            id="42-stars"
+                            value="Malo"
+                          />
+                          <label for="42-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  {/* <div className="star-rating" dir="rtl">
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Fuga de frenos</p>
+                    </div>
+                    <div className="col">
+                      <div className="tof" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Fuga de frenos"
+                            id="43-stars"
+                            className="input-tof"
+                            value="No"
+                          />
+                          <label for="43-stars" className="labeltof">
+                            NO
+                          </label>
+
+                          <input
+                            type="radio"
+                            name="Fuga de frenos"
+                            id="45-stars"
+                            className="input-tof"
+                            value="Si"
+                          />
+                          <label for="45-stars" className="labeltof">
+                            SI
+                          </label>
+                        </div>
+                      </div>
+                      {/* <div className="star-rating" dir="rtl">
                     <div className="radio-group">
-                      <input type="radio" name="grupo-17" id="43-stars" />
+                      <input type="radio" name="Fuga de frenos" id="43-stars" />
                       <label for="43-stars" className="star">
                         &#9733;
                       </label>
-                      <input type="radio" name="grupo-17" id="44-stars" />
+                      <input type="radio" name="Fuga de frenos" id="44-stars" />
                       <label for="44-stars" className="star">
                         &#9733;
                       </label>
-                      <input type="radio" name="grupo-17" id="45-stars" />
+                      <input type="radio" name="Fuga de frenos" id="45-stars" />
                       <label for="45-stars" className="star">
                         &#9733;
                       </label>
                     </div>
                   </div> */}
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Amortiguadores</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-18" id="46-stars" />
-                      <label for="46-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-18" id="47-stars" />
-                      <label for="47-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-18" id="48-stars" />
-                      <label for="48-stars" className="star">
-                        &#9733;
-                      </label>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Amortiguadores</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Amortiguadores"
+                            id="46-stars"
+                            value="Bueno"
+                          />
+                          <label for="46-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Amortiguadores"
+                            id="47-stars"
+                            value="Regular"
+                          />
+                          <label for="47-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Amortiguadores"
+                            id="48-stars"
+                            value="Malo"
+                          />
+                          <label for="48-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Suspensión juntas</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Suspensión juntas"
+                            id="49-stars"
+                            value="Bueno"
+                          />
+                          <label for="49-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Suspensión juntas"
+                            id="50-stars"
+                            value="Regular"
+                          />
+                          <label for="50-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Suspensión juntas"
+                            id="51-stars"
+                            value="Malo"
+                          />
+                          <label for="51-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Ruidos en la suspensión</p>
+                    </div>
+                    <div className="col">
+                      <div className="tof" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Ruidos en la suspensión"
+                            id="52-stars"
+                            className="input-tof"
+                            value="No"
+                          />
+                          <label for="52-stars" className="labeltof">
+                            NO
+                          </label>
+
+                          <input
+                            type="radio"
+                            name="Ruidos en la suspensión"
+                            id="54-stars"
+                            className="input-tof"
+                            value="Si"
+                          />
+                          <label for="54-stars" className="labeltof">
+                            SI
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Correa dentada</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Correa dentada"
+                            id="55-stars"
+                            value="Bueno"
+                          />
+                          <label for="55-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Correa dentada"
+                            id="56-stars"
+                            value="Regular"
+                          />
+                          <label for="56-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Correa dentada"
+                            id="57-stars"
+                            value="Malo"
+                          />
+                          <label for="57-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Regulación de butacas</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Regulación de butacas"
+                            id="58-stars"
+                            value="Bueno"
+                          />
+                          <label for="58-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Regulación de butacas"
+                            id="59-stars"
+                            value="Regular"
+                          />
+                          <label for="59-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Regulación de butacas"
+                            id="60-stars"
+                            value="Malo"
+                          />
+                          <label for="60-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Acción vidrios eléctricos</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Acción vidrios eléctricos"
+                            id="61-stars"
+                            value="Bueno"
+                          />
+                          <label for="61-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción vidrios eléctricos"
+                            id="62-stars"
+                            value="Regular"
+                          />
+                          <label for="62-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción vidrios eléctricos"
+                            id="63-stars"
+                            value="Malo"
+                          />
+                          <label for="63-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Acción vidrios manuales</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Acción vidrios manuales"
+                            id="64-stars"
+                            value="Bueno"
+                          />
+                          <label for="64-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción vidrios manuales"
+                            id="65-stars"
+                            value="Bueno"
+                          />
+                          <label for="65-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción vidrios manuales"
+                            id="66-stars"
+                            value="Malo"
+                          />
+                          <label for="66-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Estado de butacas</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Estado de butacas"
+                            id="67-stars"
+                            value="Bueno"
+                          />
+                          <label for="67-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Estado de butacas"
+                            id="68-stars"
+                            value="Regular"
+                          />
+                          <label for="68-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Estado de butacas"
+                            id="69-stars"
+                            value="Malo"
+                          />
+                          <label for="69-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Acción freno de estac.</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Acción freno de estac."
+                            id="70-stars"
+                            value="Bueno"
+                          />
+                          <label for="70-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción freno de estac."
+                            id="71-stars"
+                            value="Regular"
+                          />
+                          <label for="71-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción freno de estac."
+                            id="72-stars"
+                            value="Malo"
+                          />
+                          <label for="72-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Acción trabas eléctricas</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Acción trabas eléctricas"
+                            id="73-stars"
+                            value="Bueno"
+                          />
+                          <label for="73-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción trabas eléctricas"
+                            id="74-stars"
+                            value="Regular"
+                          />
+                          <label for="74-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción trabas eléctricas"
+                            id="75-stars"
+                            value="Malo"
+                          />
+                          <label for="75-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Acción Espejos</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Acción Espejos"
+                            id="76-stars"
+                            value="Bueno"
+                          />
+                          <label for="76-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción Espejos"
+                            id="77-stars"
+                            value="Regular"
+                          />
+                          <label for="77-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción Espejos"
+                            id="78-stars"
+                            value="Malo"
+                          />
+                          <label for="78-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Cinturones de seguridad</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="inturones de seguridad"
+                            id="79-stars"
+                            value="Bueno"
+                          />
+                          <label for="79-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="inturones de seguridad"
+                            id="80-stars"
+                            value="Regular"
+                          />
+                          <label for="80-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="inturones de seguridad"
+                            id="81-stars"
+                            value="Malo"
+                          />
+                          <label for="81-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Caja de dirección</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Caja de dirección"
+                            id="82-stars"
+                            value="Bueno"
+                          />
+                          <label for="82-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Caja de dirección"
+                            id="83-stars"
+                            value="Regular"
+                          />
+                          <label for="83-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Caja de dirección"
+                            id="84-stars"
+                            value="Malo"
+                          />
+                          <label for="84-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Cojin de motor y cambios</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Cojin de motor y cambios"
+                            id="85-stars"
+                            value="Bueno"
+                          />
+                          <label for="85-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Cojin de motor y cambios"
+                            id="86-stars"
+                            value="Regular"
+                          />
+                          <label for="86-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Cojin de motor y cambios"
+                            id="87-stars"
+                            value="Malo"
+                          />
+                          <label for="87-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Ruido de motor / cambios</p>
+                    </div>
+                    <div className="col">
+                      <div className="tof" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Ruido de motor / cambios"
+                            id="88-stars"
+                            value="No"
+                            className="input-tof"
+                          />
+                          <label for="88-stars" className="labeltof">
+                            NO
+                          </label>
+
+                          <input
+                            type="radio"
+                            name="Ruido de motor / cambios"
+                            id="90-stars"
+                            value="Si"
+                            className="input-tof"
+                          />
+                          <label for="90-stars" className="labeltof">
+                            SI
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Fuga motor</p>
+                    </div>
+                    <div className="col">
+                      <div className="tof" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Fuga motor"
+                            id="91-stars"
+                            value="No"
+                            className="input-tof"
+                          />
+                          <label for="91-stars" className="labeltof">
+                            NO
+                          </label>
+
+                          <input
+                            type="radio"
+                            name="Fuga motor"
+                            id="93-stars"
+                            value="Si"
+                            className="input-tof"
+                          />
+                          <label for="93-stars" className="labeltof">
+                            SI
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Fuga de cambios</p>
+                    </div>
+                    <div className="col">
+                      <div className="tof" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Fuga de cambios"
+                            id="94-stars"
+                            value="No"
+                            className="input-tof"
+                          />
+                          <label for="94-stars" className="labeltof">
+                            NO
+                          </label>
+
+                          <input
+                            type="radio"
+                            name="Fuga de cambios"
+                            id="96-stars"
+                            value="Si"
+                            className="input-tof"
+                          />
+                          <label for="96-stars" className="labeltof">
+                            SI
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Escape</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Escape"
+                            id="97-stars"
+                            value="Bueno"
+                          />
+                          <label for="97-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Escape"
+                            id="98-stars"
+                            value="Regular"
+                          />
+                          <label for="98-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Escape"
+                            id="99-stars"
+                            value="Malo"
+                          />
+                          <label for="99-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Humo anormal</p>
+                    </div>
+                    <div className="col">
+                      <div className="tof" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Humo anormal"
+                            id="100-stars"
+                            value="No"
+                            className="input-tof"
+                          />
+                          <label for="100-stars" className="labeltof">
+                            NO
+                          </label>
+
+                          <input
+                            type="radio"
+                            name="Humo anormal"
+                            id="102-stars"
+                            value="Si"
+                            className="input-tof"
+                          />
+                          <label for="102-stars" className="labeltof">
+                            SI
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Estado del panel</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Estado del panel"
+                            id="103-stars"
+                            value="Bueno"
+                          />
+                          <label for="103-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Estado del panel"
+                            id="104-stars"
+                            value="Regular"
+                          />
+                          <label for="104-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Estado del panel"
+                            id="105-stars"
+                            value="Malo"
+                          />
+                          <label for="105-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col mt-3">
+                      <p>Acción. Cambio</p>
+                    </div>
+                    <div className="col">
+                      <div className="star-rating" dir="rtl">
+                        <div className="radio-group">
+                          <input
+                            type="radio"
+                            name="Acción. Cambio"
+                            id="106-stars"
+                            value="Bueno"
+                          />
+                          <label for="106-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción. Cambio"
+                            id="107-stars"
+                            value="Regular"
+                          />
+                          <label for="107-stars" className="star">
+                            &#9733;
+                          </label>
+                          <input
+                            type="radio"
+                            name="Acción. Cambio"
+                            id="108-stars"
+                            value="Malo"
+                          />
+                          <label for="108-stars" className="star">
+                            &#9733;
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Suspensión juntas</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-19" id="49-stars" />
-                      <label for="49-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-19" id="50-stars" />
-                      <label for="50-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-19" id="51-stars" />
-                      <label for="51-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Ruidos en la suspensión</p>
-                </div>
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-20"
-                        id="52-stars"
-                        className="input-tof"
-                      />
-                      <label for="52-stars" className="labeltof">
-                        NO
-                      </label>
-                      {/* <input type="radio" name="grupo-17" id="101-stars" />
-                      <label for="101-stars" className="star">
-                        &#9733;
-                      </label> */}
-                      <input
-                        type="radio"
-                        name="grupo-20"
-                        id="54-stars"
-                        className="input-tof"
-                      />
-                      <label for="54-stars" className="labeltof">
-                        SI
-                      </label>
-                    </div>
-                  </div>
-                  {/* <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-20" id="52-stars" />
-                      <label for="52-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-20" id="53-stars" />
-                      <label for="53-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-20" id="54-stars" />
-                      <label for="54-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div> */}
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Correa dentada</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-21" id="55-stars" />
-                      <label for="55-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-21" id="56-stars" />
-                      <label for="56-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-21" id="57-stars" />
-                      <label for="57-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Regulación de butacas</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-22" id="58-stars" />
-                      <label for="58-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-22" id="59-stars" />
-                      <label for="59-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-22" id="60-stars" />
-                      <label for="60-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Acción vidrios eléctricos</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-23" id="61-stars" />
-                      <label for="61-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-23" id="62-stars" />
-                      <label for="62-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-23" id="63-stars" />
-                      <label for="63-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Acción vidrios manuales</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-24" id="64-stars" />
-                      <label for="64-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-24" id="65-stars" />
-                      <label for="65-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-24" id="66-stars" />
-                      <label for="66-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Estado de butacas</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-25" id="67-stars" />
-                      <label for="7-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-25" id="68-stars" />
-                      <label for="68-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-25" id="69-stars" />
-                      <label for="69-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Acción freno de estac.</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-26" id="70-stars" />
-                      <label for="70-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-26" id="71-stars" />
-                      <label for="71-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-26" id="72-stars" />
-                      <label for="72-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Acción trabas eléctricas</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-27" id="73-stars" />
-                      <label for="73-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-27" id="74-stars" />
-                      <label for="74-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-27" id="75-stars" />
-                      <label for="75-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Acción Espejos</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-28" id="76-stars" />
-                      <label for="76-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-28" id="77-stars" />
-                      <label for="77-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-28" id="78-stars" />
-                      <label for="78-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Cinturones de seguridad</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-29" id="79-stars" />
-                      <label for="79-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-29" id="80-stars" />
-                      <label for="80-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-29" id="81-stars" />
-                      <label for="81-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Caja de dirección</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-30" id="82-stars" />
-                      <label for="82-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-30" id="83-stars" />
-                      <label for="83-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-30" id="84-stars" />
-                      <label for="84-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Cojin de motor y cambios</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-31" id="85-stars" />
-                      <label for="85-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-31" id="86-stars" />
-                      <label for="86-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-31" id="87-stars" />
-                      <label for="87-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Ruido de motor / cambios</p>
-                </div>
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-32"
-                        id="88-stars"
-                        className="input-tof"
-                      />
-                      <label for="88-stars" className="labeltof">
-                        NO
-                      </label>
-                      {/* <input type="radio" name="grupo-32" id="89-stars" />
-                      <label for="89-stars" className="star">
-                        &#9733;
-                      </label> */}
-                      <input
-                        type="radio"
-                        name="grupo-32"
-                        id="90-stars"
-                        className="input-tof"
-                      />
-                      <label for="90-stars" className="labeltof">
-                        SI
-                      </label>
-                    </div>
-                  </div>
-                  {/* <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-32" id="88-stars" />
-                      <label for="88-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-32" id="89-stars" />
-                      <label for="89-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-32" id="90-stars" />
-                      <label for="90-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div> */}
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Fuga motor</p>
-                </div>
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-33"
-                        id="91-stars"
-                        className="input-tof"
-                      />
-                      <label for="91-stars" className="labeltof">
-                        NO
-                      </label>
-                      {/* <input type="radio" name="grupo-32" id="92-stars" />
-                      <label for="93-stars" className="star">
-                        &#9733;
-                      </label> */}
-                      <input
-                        type="radio"
-                        name="grupo-33"
-                        id="93-stars"
-                        className="input-tof"
-                      />
-                      <label for="93-stars" className="labeltof">
-                        SI
-                      </label>
-                    </div>
-                  </div>
-                  {/* <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-33" id="91-stars" />
-                      <label for="91-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-33" id="92-stars" />
-                      <label for="92-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-33" id="93-stars" />
-                      <label for="93-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div> */}
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Fuga de cambios</p>
-                </div>
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-34"
-                        id="94-stars"
-                        className="input-tof"
-                      />
-                      <label for="94-stars" className="labeltof">
-                        NO
-                      </label>
-                      {/* <input type="radio" name="grupo-34" id="95-stars" />
-                      <label for="95-stars" className="star">
-                        &#9733;
-                      </label> */}
-                      <input
-                        type="radio"
-                        name="grupo-34"
-                        id="96-stars"
-                        className="input-tof"
-                      />
-                      <label for="96-stars" className="labeltof">
-                        SI
-                      </label>
-                    </div>
-                  </div>
-                  {/* <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-34" id="94-stars" />
-                      <label for="94-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-34" id="95-stars" />
-                      <label for="95-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-34" id="96-stars" />
-                      <label for="96-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div> */}
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Escape</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-35" id="97-stars" />
-                      <label for="97-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-35" id="98-stars" />
-                      <label for="98-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-35" id="99-stars" />
-                      <label for="99-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Humo anormal</p>
-                </div>
-                <div className="col">
-                  <div className="tof" dir="rtl">
-                    <div className="radio-group">
-                      <input
-                        type="radio"
-                        name="grupo-36"
-                        id="100-stars"
-                        className="input-tof"
-                      />
-                      <label for="100-stars" className="labeltof">
-                        NO
-                      </label>
-                      {/* <input type="radio" name="grupo-36" id="101-stars" />
-                      <label for="101-stars" className="star">
-                        &#9733;
-                      </label> */}
-                      <input
-                        type="radio"
-                        name="grupo-36"
-                        id="102-stars"
-                        className="input-tof"
-                      />
-                      <label for="102-stars" className="labeltof">
-                        SI
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Estado del panel</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-37" id="103-stars" />
-                      <label for="103-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-37" id="104-stars" />
-                      <label for="104-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-37" id="105-stars" />
-                      <label for="105-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col mt-3">
-                  <p>Acción. Cambio</p>
-                </div>
-                <div className="col">
-                  <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="grupo-38" id="106-stars" />
-                      <label for="106-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-38" id="107-stars" />
-                      <label for="107-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="grupo-38" id="108-stars" />
-                      <label for="108-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              </form>
             </div>
           </div>
         </div>
-
         <hr className="mt-3" />
-        <div className="col-md">
-          Fotos del vehículo
-          <div className="mb-3 mt-3">
-            <label for="formFile" className="form-label">
-              Frontal
-            </label>
-            <input className="form-control" type="file" id="formFile" />
+        Fotos del vehículo
+        <div className="row mt-2">
+          <div className="col-md">
+            <div className="mb-3">
+              <label htmlFor="frontalImageFile" className="form-label">
+                Frontal
+              </label>
+              <input
+                className="form-control"
+                type="file"
+                id="frontalImageFile"
+                //onChange={handleFrontalImageUpload}
+                onChange={(event) =>
+                  setFrontalImage(URL.createObjectURL(event.target.files[0]))
+                }
+              />
+            </div>
+            {/* {frontalImageURL && ( */}
+            {frontalImage && (
+              <div>
+                <h6>Imagen frontal seleccionada:</h6>
+                <img
+                  //src={frontalImageURL}
+                  src={frontalImage}
+                  alt="Imagen frontal seleccionada"
+                  style={{ maxWidth: "300px", maxHeight: "300px" }}
+                  value=""
+                />
+              </div>
+            )}
+
+            <div className="mb-3">
+              <label htmlFor="detrasImageFile" className="form-label">
+                Detras
+              </label>
+              <input
+                className="form-control"
+                type="file"
+                id="detrasImageFile"
+                //onChange={handleDetrasImageUpload}
+                onChange={(event) =>
+                  setDetrasImage(URL.createObjectURL(event.target.files[0]))
+                }
+              />
+            </div>
+            {/* {detrasImageURL && ( */}
+            {detrasImage && (
+              <div>
+                <h6>Imagen de detrás seleccionada:</h6>
+                <img
+                  //src={detrasImageURL}
+                  src={detrasImage}
+                  alt="Imagen de detrás seleccionada"
+                  style={{ maxWidth: "300px", maxHeight: "300px" }}
+                />
+              </div>
+            )}
           </div>
-          <div className="mb-3">
-            <label for="formFile" className="form-label">
-              Perfil derecho
-            </label>
-            <input className="form-control" type="file" id="formFile" />
-          </div>
-          <div className="mb-3">
-            <label for="formFile" className="form-label">
-              Perfil izquierdo
-            </label>
-            <input className="form-control" type="file" id="formFile" />
-          </div>
-          <div className="mb-3">
-            <label for="formFile" className="form-label">
-              Detras
-            </label>
-            <input className="form-control" type="file" id="formFile" />
+          <div className="col-md">
+            <div className="mb-3">
+              <label htmlFor="izquierdoImageFile" className="form-label">
+                Perfil Izquierdo
+              </label>
+              <input
+                className="form-control"
+                type="file"
+                id="izquierdoImageFile"
+                //onChange={handleIzquierdoImageUpload}
+                onChange={(event) =>
+                  setIzquierdoImage(URL.createObjectURL(event.target.files[0]))
+                }
+              />
+            </div>
+            {/* {izquierdoImageURL && ( */}
+            {izquierdoImage && (
+              <div>
+                <h6>Imagen frontal seleccionada:</h6>
+                <img
+                  //src={izquierdoImageURL}
+                  src={izquierdoImage}
+                  alt="Imagen frontal seleccionada"
+                  style={{ maxWidth: "300px", maxHeight: "300px" }}
+                />
+              </div>
+            )}
+
+            <div className="mb-3">
+              <label htmlFor="derechoImageFile" className="form-label">
+                Perfil Derecho
+              </label>
+              <input
+                className="form-control"
+                type="file"
+                id="derechoImageFile"
+                //onChange={handleDerechoImageUpload}
+                onChange={(event) =>
+                  setDerechoImage(URL.createObjectURL(event.target.files[0]))
+                }
+              />
+            </div>
+            {/* {derechoImageURL && ( */}
+            {derechoImage && (
+              <div>
+                <h6>Imagen de detrás seleccionada:</h6>
+                <img
+                  //src={derechoImageURL}
+                  src={derechoImage}
+                  alt="Imagen de detrás seleccionada"
+                  style={{ maxWidth: "300px", maxHeight: "300px" }}
+                />
+              </div>
+            )}
+            {/* <div className="mb-3">
+                <label for="formFile" className="form-label">
+                  Perfil izquierdo
+                </label>
+                <input className="form-control" type="file" id="formFile" />
+              </div>
+              <div className="mb-3">
+                <label for="formFile" className="form-label">
+                  Detras
+                </label>
+                <input className="form-control" type="file" id="formFile" />
+              </div> */}
           </div>
         </div>
         <hr className="mt-1" />
-        <div className="col-md">
+        <div className="col-md" id="todoList">
           <TodoList />
         </div>
-
         <hr className="mt-3" />
-        <div className="col-md">
-          Calificación general del vehículo
-          <div className="star-rating" dir="rtl" style={{ margin: "auto" }}>
-            <div className="radio-group">
-              <input type="radio" name="grupo-top" id="i-stars" />
-              <label
-                for="i-stars"
-                className="star"
-                checked={selectedOption === "i-stars"}
-                onChange={handleStarChange}
-              >
-                &#9733;
-              </label>
-              <input type="radio" name="grupo-top" id="ii-stars" />
-              <label
-                for="ii-stars"
-                className="star"
-                checked={selectedOption === "ii-stars"}
-                onChange={handleStarChange}
-              >
-                &#9733;
-              </label>
-              <input type="radio" name="grupo-top" id="iii-stars" />
-              <label
-                for="iii-stars"
-                className="star"
-                checked={selectedOption === "iii-stars"}
-                onChange={handleStarChange}
-              >
-                &#9733;
-              </label>
-              <input type="radio" name="grupo-top" id="iv-stars" />
-              <label
-                for="iv-stars"
-                className="star"
-                checked={selectedOption === "iv-stars"}
-                onChange={handleStarChange}
-              >
-                &#9733;
-              </label>
-              <input type="radio" name="grupo-top" id="v-stars" />
-              <label
-                for="v-stars"
-                className="star"
-                checked={selectedOption === "v-stars"}
-                onChange={handleStarChange}
-              >
-                &#9733;
-              </label>
+        <form id="myForm6">
+          <div className="col-md">
+            Calificación general del vehículo
+            <div className="star-rating" dir="rtl" style={{ margin: "auto" }}>
+              <div className="radio-group">
+                <input
+                  type="radio"
+                  name=""
+                  id="Excelente"
+                  value="Excelente"
+                  checked={selectedOption === "Excelente"}
+                  onChange={handleStarChange}
+                />
+                <label for="Excelente" className="star">
+                  &#9733;
+                </label>
+                <input
+                  type="radio"
+                  name="Calificación general del vehículo"
+                  id="Muy bueno"
+                  value="Muy bueno"
+                  checked={selectedOption === "Muy bueno"}
+                  onChange={handleStarChange}
+                />
+                <label for="Muy bueno" className="star">
+                  &#9733;
+                </label>
+                <input
+                  type="radio"
+                  name="Calificación general del vehículo"
+                  id="Bueno"
+                  value="Bueno"
+                  checked={selectedOption === "Bueno"}
+                  onChange={handleStarChange}
+                />
+                <label for="Bueno" className="star">
+                  &#9733;
+                </label>
+                <input
+                  type="radio"
+                  name="Calificación general del vehículo"
+                  id="Regular"
+                  value="Regular"
+                  checked={selectedOption === "Regular"}
+                  onChange={handleStarChange}
+                />
+                <label for="Regular" className="star">
+                  &#9733;
+                </label>
+                <input
+                  type="radio"
+                  name="Calificación general del vehículo"
+                  id="Malo"
+                  value="Malo"
+                  checked={selectedOption === "Malo"}
+                  onChange={handleStarChange}
+                />
+                <label for="Malo" className="star">
+                  &#9733;
+                </label>
+              </div>
             </div>
-            {selectedOption && (
-              <label htmlFor={selectedOption} className="selected-label">
-                Opción seleccionada: {selectedOption}
-              </label>
-            )}
           </div>
+        </form>
+        <div className="col-md">
+          {selectedOption && (
+            <label htmlFor={selectedOption} style={{ color: "black" }}>
+              {selectedOption}
+            </label>
+          )}
         </div>
         <hr className="mt-3" />
       </div>
-
-      <button>Finalizar</button>
+     
+      {/* <PDFDownloadLink document={generarPDF()} fileName="PireRayenTasacion.pdf">
+        {({ blob, url, loading, error }) =>
+        
+          loading ? "Generando PDF..." : "Descargar PDF"
+        }
+      </PDFDownloadLink> */}
+      <PDFDownloadLink document={generarPDF()} fileName="PireRayenTasacion.pdf">
+  {({ blob, url, loading, error }) => (
+    <button
+      onClick={(event) => {
+        event.preventDefault();
+        Swal.fire({
+          title: '¿Deseas finalizar y descargar el PDF?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Sí',
+          cancelButtonText: 'No',
+          customClass: {
+            confirmButton: 'swal2-confirm-color',
+          },
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.open(url, '_blank');
+          }
+        });
+      }}
+    >
+      {loading ? 'Generando PDF...' : 'Finalizar'}
+    </button>
+  )}
+</PDFDownloadLink>
+     
       <hr className="mt-3" />
+
     </div>
   );
 }

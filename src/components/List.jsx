@@ -47,6 +47,7 @@ const TodoList = () => {
         <input
           type="text"
           value={inputValue}
+          name="Observaciones (rayaduras o aboyaduras)"
           onChange={handleInputChange}
           placeholder="Descripción..."
           className='form-control'
@@ -54,19 +55,13 @@ const TodoList = () => {
         <button onClick={handleAddTodo}>+</button>
       </div>
 
-      <ul className="todo-items">
+      <ul className="todo-items" value="">
         {todos.map((todo) => (
-          <li key={todo.id} className={todo.completed ? 'completed' : ''}>
-            {/* <input
-              type="checkbox"
-              checked={todo.completed}
-              onChange={() => handleToggleComplete(todo.id)}
-            /> */}
+          <li key={todo.id} className={todo.completed ? 'completed' : ''}> 
             <img src={check} alt=""style={{width: "7%", height: "7%"}} />
             <span style={{fontSize: "17px", marginLeft: "8px"}}>{todo.text}</span>
             <img src={trash} alt="" style={{width: "6%", height: "6%", cursor: "pointer", marginLeft: "auto"}}
             onClick={() => handleDeleteTodo(todo.id)} />
-            {/* <button className='button-delete' onClick={() => handleDeleteTodo(todo.id)}></button> */}
           </li>
         ))}
       </ul>
