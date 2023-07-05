@@ -22,6 +22,10 @@ import logoImage from "../images/pirerayen_logo.jpg";
 import "jspdf-autotable";
 import html2pdf from "html2pdf.js";
 import $ from "jquery";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import { Modal } from "bootstrap";
+import lapiz from "../images/lapiz.png";
 export default function Home() {
   const dispatch = useDispatch();
   // useEffect(() => {
@@ -55,12 +59,16 @@ export default function Home() {
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedValueColor, setSelectedValueColor] = useState("");
   const [selectedValueModelo, setSelectedValueModelo] = useState("");
+  const [selectedValueSolicitado, setSelectedValueSolicitado] = useState("");
+  const [selectedValuePeritomecanico, setSelectedValuePeritomecanico] =
+    useState("");
+  const [selectedValuePeritochapa, setSelectedValuePeritochapa] = useState("");
   const [frontalImageURL, setFrontalImageURL] = useState("");
   const [detrasImageURL, setDetrasImageURL] = useState("");
   const [izquierdoImageURL, setIzquierdoImageURL] = useState("");
   const [derechoImageURL, setDerechoImageURL] = useState("");
-  const [inputValueDominio, setInputValueDominio] = useState('');
-
+  const [inputValueDominio, setInputValueDominio] = useState("");
+  const [inputTasado, setInputTasado] = useState("");
   const [formData, setFormData] = useState(null);
   const [frontalImage, setFrontalImage] = useState(null);
   const [detrasImage, setDetrasImage] = useState(null);
@@ -126,6 +134,20 @@ export default function Home() {
   const handleInputChangeDominio = (event) => {
     const newValue = event.target.value.toUpperCase();
     setInputValueDominio(newValue);
+  };
+  const handleSelectChangeSolicitado = (event) => {
+    setSelectedValueSolicitado(event.target.value);
+  };
+  const handleSelectChangePeritomecanico = (event) => {
+    setSelectedValuePeritomecanico(event.target.value);
+  };
+  const handleSelectChangePeritochapa = (event) => {
+    setSelectedValuePeritochapa(event.target.value);
+  };
+
+  const handleInputTasado = (event) => {
+    const value = event.target.value.replace(/^\$/, ""); // Eliminar el signo "$" al inicio, si existe
+    setInputTasado(value);
   };
 
   const handleKeyDown = (event) => {
@@ -275,6 +297,12 @@ export default function Home() {
       borderBottomWidth: 1,
       marginVertical: 10,
     },
+    separatorOne: {
+      borderBottomColor: "#012967",
+      borderBottomWidth: 1,
+      marginVertical: 20,
+      marginTop: 5,
+    },
     footer: {
       position: "fixed",
       bottom: 30, // Ajusta la posición vertical según tus necesidades
@@ -292,6 +320,9 @@ export default function Home() {
       formData4,
       formData5,
       formData6,
+      formData7,
+      formData8,
+      formData9,
     }) => (
       <Document>
         <Page style={styles.page}>
@@ -320,17 +351,17 @@ export default function Home() {
           <View style={styles.formContainer}>
             <View style={styles.column}>
               <Text style={styles.subTittle}>
-                Características y equipamientos
-              </Text>
-              <View style={styles.separator} />
-              <Text style={styles.formData}>{formData4}</Text>
-            </View>
-            <View style={styles.column}>
-              <Text style={styles.subTittle}>
                 Estado de conservación y desgaste
               </Text>
               <View style={styles.separator} />
               <Text style={styles.formData}>{formData5}</Text>
+            </View>
+            <View style={styles.column}>
+              <Text style={styles.subTittle}>
+                Características y equipamientos
+              </Text>
+              <View style={styles.separator} />
+              <Text style={styles.formData}>{formData4}</Text>
             </View>
           </View>
           <Text style={styles.subTittle}>Fotos del vehículo</Text>
@@ -351,82 +382,124 @@ export default function Home() {
               )}
             </View>
           </View>
-          <View style={styles.separator} />
           <Text style={styles.formData}>{formData6}</Text>
+          <View style={styles.separatorOne} />
+          <Text style={styles.formData}>{formData7}</Text>
+          <View style={styles.separatorOne} />
+          <Text style={styles.formData}>{formData8}</Text>
+          <View style={styles.separatorOne} />
+          <Text style={styles.formData}>{formData9}</Text>
+          <View style={styles.separatorOne} />
         </Page>
       </Document>
     );
 
     const getFormData1 = () => {
-      const form = $("#myForm1"); // Obtener el formulario 1 por su ID
-      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 1
+      const form = $("#myForm1");
+      const formData = new FormData(form[0]);
 
       const serializedData = [];
       formData.forEach((value, key) => {
-        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 1
+        serializedData.push(`${key}: ${value}`);
       });
 
-      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+      return serializedData.join("\n");
     };
 
     const getFormData2 = () => {
-      const form = $("#myForm2"); // Obtener el formulario 2 por su ID
-      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 2
+      const form = $("#myForm2");
+      const formData = new FormData(form[0]);
 
       const serializedData = [];
       formData.forEach((value, key) => {
-        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 2
+        serializedData.push(`${key}: ${value}`);
       });
 
-      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+      return serializedData.join("\n");
     };
 
     const getFormData3 = () => {
-      const form = $("#myForm3"); // Obtener el formulario 3 por su ID
-      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 3
+      const form = $("#myForm3");
+      const formData = new FormData(form[0]);
 
       const serializedData = [];
       formData.forEach((value, key) => {
-        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 3
+        serializedData.push(`${key}: ${value}`);
       });
 
-      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+      return serializedData.join("\n");
     };
 
     const getFormData4 = () => {
-      const form = $("#myForm4"); // Obtener el formulario 4 por su ID
-      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 4
+      const form = $("#myForm4");
+      const formData = new FormData(form[0]);
 
       const serializedData = [];
       formData.forEach((value, key) => {
-        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 4
+        serializedData.push(`${key}: ${value}`);
       });
 
-      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+      return serializedData.join("\n");
     };
 
     const getFormData5 = () => {
-      const form = $("#myForm5"); // Obtener el formulario 4 por su ID
-      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 5
+      const form = $("#myForm5");
+      const formData = new FormData(form[0]);
 
       const serializedData = [];
       formData.forEach((value, key) => {
-        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 5
+        serializedData.push(`${key}: ${value}`);
       });
 
-      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+      return serializedData.join("\n");
     };
 
     const getFormData6 = () => {
-      const form = $("#myForm6"); // Obtener el formulario 4 por su ID
-      const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario 6
+      const form = $("#myForm6");
+      const formData = new FormData(form[0]);
 
       const serializedData = [];
       formData.forEach((value, key) => {
-        serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario 6
+        serializedData.push(`${key}: ${value}`);
       });
 
-      return serializedData.join("\n"); // Unir los datos serializados en un solo string
+      return serializedData.join("\n");
+    };
+
+    const getFormData7 = () => {
+      const form = $("#myForm7");
+      const formData = new FormData(form[0]);
+
+      const serializedData = [];
+      formData.forEach((value, key) => {
+        serializedData.push(`${key}: ${value}`);
+      });
+
+      return serializedData.join("\n");
+    };
+
+    const getFormData8 = () => {
+      const form = $("#myForm8");
+      const formData = new FormData(form[0]);
+
+      const serializedData = [];
+      formData.forEach((value, key) => {
+        serializedData.push(`${key}: ${value}`);
+      });
+
+      return serializedData.join("\n");
+    };
+
+    const getFormData9 = () => {
+      const form = $("#myForm9");
+      const formData = new FormData(form[0]);
+
+      const serializedData = [];
+      formData.forEach((value, key) => {
+        serializedData.push(`${key}: ${value}`);
+      });
+
+      return serializedData.join("\n");
     };
 
     const formData1 = getFormData1(); // Obtener los datos del formulario 1
@@ -435,6 +508,9 @@ export default function Home() {
     const formData4 = getFormData4(); // Obtener los datos del formulario 4
     const formData5 = getFormData5(); // Obtener los datos del formulario 5
     const formData6 = getFormData6(); // Obtener los datos del formulario 6
+    const formData7 = getFormData7(); // Obtener los datos del formulario 7
+    const formData8 = getFormData8(); // Obtener los datos del formulario 8
+    const formData9 = getFormData9(); // Obtener los datos del formulario 9
 
     return (
       <MyPDF
@@ -444,29 +520,11 @@ export default function Home() {
         formData4={formData4}
         formData5={formData5}
         formData6={formData6}
+        formData7={formData7}
+        formData8={formData8}
+        formData9={formData9}
       />
     );
-
-    //   const getFormData = () => {
-    //     const form = $("#myForm2"); // Obtener el formulario por su ID
-    //     const formData = new FormData(form[0]); // Crear un objeto FormData con el formulario
-
-    //     const serializedData = [];
-    //     formData.forEach((value, key) => {
-    //       serializedData.push(`${key}: ${value}`); // Serializar los datos del formulario
-    //     });
-
-    //     return serializedData.join("\n"); // Unir los datos serializados en un solo string
-    //   };
-
-    //   const formData = getFormData(); // Obtener los datos del formulario
-
-    //   return <MyPDF formData={formData} />;
-    // };
-
-    // const handleGenerarPDF = () => {
-    //   const pdf = generarPDF();
-    //   PDFDownloadLink.createPDF(pdf).download("PireRayenTasacion.pdf");
   };
 
   return (
@@ -490,8 +548,8 @@ export default function Home() {
                       maxLength={35}
                       id="Nombre del cliente"
                       autoComplete="off"
-        required
-        onKeyDown={handleKeyDown}
+                      required
+                      onKeyDown={handleKeyDown}
                     />
                     <label for="name" className="label-name">
                       <span className="content-name">Nombre del cliente</span>
@@ -1061,7 +1119,7 @@ export default function Home() {
               <form id="myForm3">
                 <div>
                   {/* HASTA ACA */}
-                  <div className="form mt-2">
+                  {/* <div className="form mt-2">
                     <div className="form-group">
                       <input
                         type="text"
@@ -1078,8 +1136,8 @@ export default function Home() {
                         <span className="content-name">N° Chasis</span>
                       </label>
                     </div>
-                  </div>
-                  <div className="form mt-2">
+                  </div> */}
+                  {/* <div className="form mt-2">
                     <div className="form-group">
                       <input
                         type="text"
@@ -1096,9 +1154,9 @@ export default function Home() {
                         <span className="content-name">N° Motor</span>
                       </label>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="row mt-3">
-                    <div className="col mt-1">
+                    {/* <div className="col mt-1">
                       Está alineado?
                       <div className="col">
                         <div className="tof-one" dir="rtl">
@@ -1125,79 +1183,8 @@ export default function Home() {
                             </label>
                           </div>
                         </div>
-                        {/* <div className="row">
-                    <div className="col mt-1">
-                      <p className="text-end">No</p>
-                    </div>
-                    <div className="col mt-1">
-                      <div className="form-check form-switch">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="alineado"
-                          checked
-                          style={{ backgroundColor: "#087E8B" }}
-                        />
                       </div>
-                    </div>
-                    <div className="col mt-1">
-                      <p className="text-start">Si</p>
-                    </div>
-                  </div> */}
-                      </div>
-                    </div>
-                    <div className="col mt-1">
-                      Tiene las revisiones?
-                      <div className="col">
-                        <div className="tof-one" dir="rtl">
-                          <div className="radio-group">
-                            <input
-                              type="radio"
-                              name="Tiene las revisiones?"
-                              id="3-box"
-                              className="input-tof"
-                              value="No"
-                            />
-                            <label for="3-box" className="labeltof">
-                              NO
-                            </label>
-                            <input
-                              type="radio"
-                              name="Tiene las revisiones?"
-                              id="4-box"
-                              className="input-tof"
-                              value="Si"
-                            />
-                            <label for="4-box" className="labeltof">
-                              SI
-                            </label>
-                          </div>
-                        </div>
-                        {/* <div className="row">
-                    <div className="col mt-1">
-                      <p className="text-end">No</p>
-                    </div>
-                    <div className="col mt-1">
-                      <div className="form-check-inline form-switch">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="alineado"
-                          checked
-                          style={{ backgroundColor: "#087E8B" }}
-                        />
-                      </div>
-                    </div>
-                    <div className="col mt-1">
-                      <p className="text-start">Si</p>
-                    </div>
-                  </div> */}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-1">
+                    </div> */}
                     <div className="col mt-1">
                       Está en garantía?
                       <div className="col">
@@ -1227,28 +1214,39 @@ export default function Home() {
                             </label>
                           </div>
                         </div>
-                        {/* <div className="row">
-                    <div className="col mt-1">
-                      <p className="text-end">No</p>
-                    </div>
-                    <div className="col mt-1">
-                      <div className="form-check form-switch">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="alineado"
-                          checked
-                          style={{ backgroundColor: "#087E8B" }}
-                        />
                       </div>
                     </div>
                     <div className="col mt-1">
-                      <p className="text-start">Si</p>
-                    </div>
-                  </div> */}
+                      Tiene las revisiones?
+                      <div className="col">
+                        <div className="tof-one" dir="rtl">
+                          <div className="radio-group">
+                            <input
+                              type="radio"
+                              name="Tiene las revisiones?"
+                              id="3-box"
+                              className="input-tof"
+                              value="No"
+                            />
+                            <label for="3-box" className="labeltof">
+                              NO
+                            </label>
+                            <input
+                              type="radio"
+                              name="Tiene las revisiones?"
+                              id="4-box"
+                              className="input-tof"
+                              value="Si"
+                            />
+                            <label for="4-box" className="labeltof">
+                              SI
+                            </label>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                  </div>
+                  <div className="row mt-1">
                     <div className="col mt-1">
                       Tiene los manuales?
                       <div className="col">
@@ -1276,30 +1274,8 @@ export default function Home() {
                             </label>
                           </div>
                         </div>
-                        {/* <div className="row">
-                    <div className="col mt-1">
-                      <p className="text-end">No</p>
-                    </div>
-                    <div className="col mt-1">
-                      <div className="form-check-inline form-switch">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="alineado"
-                          checked
-                          style={{ backgroundColor: "#087E8B" }}
-                        />
                       </div>
                     </div>
-                    <div className="col mt-1">
-                      <p className="text-start">Si</p>
-                    </div>
-                  </div> */}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row mt-1">
                     <div className="col mt-1">
                       Tiene otra llave?
                       <div className="col">
@@ -1327,28 +1303,10 @@ export default function Home() {
                             </label>
                           </div>
                         </div>
-                        {/* <div className="row">
-                    <div className="col mt-1">
-                      <p className="text-end">No</p>
-                    </div>
-                    <div className="col mt-1">
-                      <div className="form-check form-switch">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="alineado"
-                          checked
-                          style={{ backgroundColor: "#087E8B" }}
-                        />
                       </div>
                     </div>
-                    <div className="col mt-1">
-                      <p className="text-start">Si</p>
-                    </div>
-                  </div> */}
-                      </div>
-                    </div>
+                  </div>
+                  <div className="row mt-1">
                     <div className="col mt-1">
                       Único dueño?
                       <div className="col">
@@ -1376,27 +1334,10 @@ export default function Home() {
                             </label>
                           </div>
                         </div>
-                        {/* <div className="row">
-                    <div className="col mt-1">
-                      <p className="text-end">No</p>
-                    </div>
-                    <div className="col mt-1">
-                      <div className="form-check-inline form-switch">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          id="alineado"
-                          checked
-                          style={{ backgroundColor: "#087E8B" }}
-                        />
                       </div>
                     </div>
                     <div className="col mt-1">
-                      <p className="text-start">Si</p>
-                    </div>
-                  </div> */}
-                      </div>
+                      <div className="col"></div>
                     </div>
                   </div>
                   <div className="row mt-3">
@@ -1584,6 +1525,21 @@ export default function Home() {
                       <input
                         className="form-check-input"
                         type="checkbox"
+                        value="Si contiene"
+                        name="Techo solar"
+                        id="defaultCheck1"
+                        style={{ backgroundColor: "#087E8B" }}
+                      />
+                      <label className="form-check-label" for="defaultCheck1">
+                        Techo solar
+                      </label>
+                    </div>
+                  </div>
+                  {/* <div className="col">
+                    <div className="form-check m-1">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
                         name="CD Player"
                         value="Si contiene"
                         id="defaultCheck1"
@@ -1593,7 +1549,7 @@ export default function Home() {
                         CD Player
                       </label>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="col">
                     <div className="col">
                       <div className="form-check m-1">
@@ -1683,22 +1639,8 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                <div className="row mt-2">
-                  <div className="col">
-                    <div className="form-check m-1">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        value="Si contiene"
-                        name="Aire caliente"
-                        id="defaultCheck1"
-                        style={{ backgroundColor: "#087E8B" }}
-                      />
-                      <label className="form-check-label" for="defaultCheck1">
-                        Aire caliente
-                      </label>
-                    </div>
-                  </div>
+                {/* <div className="row mt-2">
+             
                   <div className="col">
                     <div className="col">
                       <div className="form-check m-1">
@@ -1716,7 +1658,7 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div className="row mt-2">
                   <div className="col">
                     <div className="col">
@@ -2095,7 +2037,7 @@ export default function Home() {
                   Estado de conservación y desgaste
                   <div className="row mt-3">
                     <div className="col">
-                      <p style={{ color: "#087E8B" }}>Especificaciones</p>
+                      <p style={{ color: "#087E8B" }}></p>
                     </div>
                     <div className="col">
                       <div className="star-rating">
@@ -2106,6 +2048,9 @@ export default function Home() {
                         </div>
                         <hr />
                       </div>
+                    </div>
+                    <div className="col">
+                      <p style={{ color: "#087E8B" }}></p>
                     </div>
                   </div>
                   <div className="row">
@@ -2142,6 +2087,79 @@ export default function Home() {
                           <label for="3-stars" className="star">
                             &#9733;
                           </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-di"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-di"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Neumático D.I."
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2183,6 +2201,79 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-dd"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-dd"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Neumático D.D."
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -2218,6 +2309,79 @@ export default function Home() {
                           <label for="9-stars" className="star">
                             &#9733;
                           </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-ti"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-ti"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Neumático T.I."
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2259,6 +2423,79 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-td"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-td"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Neumático T.D."
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -2297,86 +2534,83 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="row">
-                    <div className="col mt-3">
-                      <p>Limp. Parabrisa</p>
-                    </div>
-                    <div className="col">
-                      <div className="star-rating" dir="rtl">
-                        <div className="radio-group">
-                          <input
-                            type="radio"
-                            name="Limpia Parabrisa"
-                            id="16-stars"
-                            value="Bueno"
-                          />
-                          <label for="16-stars" className="star">
-                            &#9733;
-                          </label>
-                          <input
-                            type="radio"
-                            name="Limpia Parabrisa"
-                            id="17-stars"
-                            value="Regular"
-                          />
-                          <label for="17-stars" className="star">
-                            &#9733;
-                          </label>
-                          <input
-                            type="radio"
-                            name="Limpia Parabrisa"
-                            id="18-stars"
-                            value="Malo"
-                          />
-                          <label for="18-stars" className="star">
-                            &#9733;
-                          </label>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-nr"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-nr"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Neumático Repuesto"
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
-                      <p>Rociador Limpiaparabrisa</p>
-                    </div>
-                    <div className="col">
-                      <div className="star-rating" dir="rtl">
-                        <div className="radio-group">
-                          <input
-                            type="radio"
-                            name="Rociador Limpiaparabrisa"
-                            id="19-stars"
-                            value="Bueno"
-                          />
-                          <label for="19-stars" className="star">
-                            &#9733;
-                          </label>
-                          <input
-                            type="radio"
-                            name="Rociador Limpiaparabrisa"
-                            id="20-stars"
-                            value="Regular"
-                          />
-                          <label for="20-stars" className="star">
-                            &#9733;
-                          </label>
-                          <input
-                            type="radio"
-                            name="Rociador Limpiaparabrisa"
-                            id="21-stars"
-                            value="Malo"
-                          />
-                          <label for="21-stars" className="star">
-                            &#9733;
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col mt-3">
-                      <p>Aire Acondicionado</p>
+                      <p>A / C</p>
                     </div>
                     <div className="col">
                       <div className="star-rating" dir="rtl">
@@ -2411,10 +2645,11 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
-                      <p>Intermitentes</p>
+                      <p>Intermit.</p>
                     </div>
                     <div className="col">
                       <div className="star-rating" dir="rtl">
@@ -2449,10 +2684,11 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
-                      <p>Luces/Farol/Interno</p>
+                      <p>Luces Faro/Int.</p>
                     </div>
                     <div className="col">
                       <div className="star-rating" dir="rtl">
@@ -2487,6 +2723,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -2522,6 +2759,79 @@ export default function Home() {
                           <label for="33-stars" className="star">
                             &#9733;
                           </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-mg"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-mg"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Motor Gral"
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2563,6 +2873,79 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-ae"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-ae"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Acción Embrague"
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -2601,6 +2984,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -2639,6 +3023,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -2687,10 +3072,11 @@ export default function Home() {
                     </div>
                   </div> */}
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
-                      <p>Amortiguadores</p>
+                      <p>Amorti - guadores</p>
                     </div>
                     <div className="col">
                       <div className="star-rating" dir="rtl">
@@ -2722,6 +3108,79 @@ export default function Home() {
                           <label for="48-stars" className="star">
                             &#9733;
                           </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-amort"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-amort"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Amortiguadores"
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2763,10 +3222,11 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
-                      <p>Ruidos en la suspensión</p>
+                      <p>Ruidos en suspensión</p>
                     </div>
                     <div className="col">
                       <div className="tof" dir="rtl">
@@ -2795,6 +3255,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -2830,6 +3291,79 @@ export default function Home() {
                           <label for="57-stars" className="star">
                             &#9733;
                           </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-cd"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-cd"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Correa dentada"
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2871,6 +3405,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -2906,6 +3441,79 @@ export default function Home() {
                           <label for="63-stars" className="star">
                             &#9733;
                           </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-ave"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-ave"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Acción vidrios eléctricos"
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -2947,6 +3555,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -2982,6 +3591,79 @@ export default function Home() {
                           <label for="69-stars" className="star">
                             &#9733;
                           </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-eb"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-eb"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Estado de butacas"
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -3023,6 +3705,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3061,6 +3744,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3099,6 +3783,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3137,6 +3822,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3175,6 +3861,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3213,6 +3900,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3245,6 +3933,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3277,6 +3966,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3309,6 +3999,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3347,6 +4038,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3379,6 +4071,7 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
+                    <div className="col mt-2"></div>
                   </div>
                   <div className="row">
                     <div className="col mt-3">
@@ -3417,41 +4110,76 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="row">
-                    <div className="col mt-3">
-                      <p>Acción. Cambio</p>
-                    </div>
-                    <div className="col">
-                      <div className="star-rating" dir="rtl">
-                        <div className="radio-group">
-                          <input
-                            type="radio"
-                            name="Acción. Cambio"
-                            id="106-stars"
-                            value="Bueno"
-                          />
-                          <label for="106-stars" className="star">
-                            &#9733;
-                          </label>
-                          <input
-                            type="radio"
-                            name="Acción. Cambio"
-                            id="107-stars"
-                            value="Regular"
-                          />
-                          <label for="107-stars" className="star">
-                            &#9733;
-                          </label>
-                          <input
-                            type="radio"
-                            name="Acción. Cambio"
-                            id="108-stars"
-                            value="Malo"
-                          />
-                          <label for="108-stars" className="star">
-                            &#9733;
-                          </label>
+                    <div className="col mt-2">
+                      <button
+                        type="button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#exampleModal-ep"
+                        data-bs-whatever="@mdo"
+                        style={{
+                          backgroundColor: "#087E8B",
+                          borderColor: "#087E8B",
+                          borderRadius: "25px",
+                          width: "40px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={lapiz}
+                          alt=""
+                          style={{
+                            height: "18px",
+                            width: "18px",
+                            margin: "auto",
+                            display: "flex",
+                            marginLeft: "-50%",
+                          }}
+                        />
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="exampleModal-ep"
+                        tabindex="-1"
+                        aria-labelledby="exampleModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4
+                                class="modal-title fs-5"
+                                id="exampleModalLabel"
+                              >
+                                Observaciones
+                              </h4>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <textarea
+                                  class="form-control"
+                                  id="message-text"
+                                  name="Observaciones Estado del panel"
+                                ></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                style={{ backgroundColor: "#087E8B" }}
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              >
+                                ✔
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -3589,84 +4317,338 @@ export default function Home() {
           </div>
         </div>
         <hr className="mt-1" />
-        <div className="col-md" id="todoList">
-          <TodoList />
-        </div>
-        <hr className="mt-3" />
-        <form id="myForm6">
-          <div className="col-md">
-            Calificación general del vehículo
-            <div className="star-rating" dir="rtl" style={{ margin: "auto" }}>
-              <div className="radio-group">
-                <input
-                  type="radio"
-                  name=""
-                  id="Excelente"
-                  value="Excelente"
-                  checked={selectedOption === "Excelente"}
-                  onChange={handleStarChange}
-                />
-                <label for="Excelente" className="star">
-                  &#9733;
-                </label>
-                <input
-                  type="radio"
-                  name="Calificación general del vehículo"
-                  id="Muy bueno"
-                  value="Muy bueno"
-                  checked={selectedOption === "Muy bueno"}
-                  onChange={handleStarChange}
-                />
-                <label for="Muy bueno" className="star">
-                  &#9733;
-                </label>
-                <input
-                  type="radio"
-                  name="Calificación general del vehículo"
-                  id="Bueno"
-                  value="Bueno"
-                  checked={selectedOption === "Bueno"}
-                  onChange={handleStarChange}
-                />
-                <label for="Bueno" className="star">
-                  &#9733;
-                </label>
-                <input
-                  type="radio"
-                  name="Calificación general del vehículo"
-                  id="Regular"
-                  value="Regular"
-                  checked={selectedOption === "Regular"}
-                  onChange={handleStarChange}
-                />
-                <label for="Regular" className="star">
-                  &#9733;
-                </label>
-                <input
-                  type="radio"
-                  name="Calificación general del vehículo"
-                  id="Malo"
-                  value="Malo"
-                  checked={selectedOption === "Malo"}
-                  onChange={handleStarChange}
-                />
-                <label for="Malo" className="star">
-                  &#9733;
-                </label>
+        <div>
+          <form id="myForm6">
+            <div className="row">
+              <div className="col">
+                <div className="form-floating">
+                  <textarea
+                    className="form-control"
+                    name="Observaciones (rayaduras o aboyaduras)"
+                    placeholder="Observaciones (rayaduras o aboyaduras)"
+                    id="floatingTextarea3"
+                    style={{
+                      height: "100px",
+                      backgroundColor: "transparent",
+                    }}
+                  ></textarea>
+                  <label for="floatingTextarea3">
+                    Observaciones (rayaduras o aboyaduras)
+                  </label>
+                </div>
               </div>
             </div>
-          </div>
-        </form>
-        <div className="col-md">
-          {selectedOption && (
-            <label htmlFor={selectedOption} style={{ color: "black" }}>
-              {selectedOption}
-            </label>
-          )}
+            <div className="col-md" id="todoList">
+              {/* <TodoList /> */}
+            </div>
+          </form>
+          <hr className="mt-3" />
+          <form id="myForm7">
+            <div className="row">
+              <div className="col">
+                Calificación general del vehículo
+                <select
+                  id="myCustomSelect"
+                  className="form-control custom-select mt-1"
+                  aria-label="Default select example"
+                  name="Calificación General del Vehículo"
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    borderBottom: "1px solid #ccc",
+                    backgroundImage:
+                      "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                    backgroundPosition: "right center",
+                    backgroundRepeat: "no-repeat",
+                    appearance: "none",
+                    WebkitAppearance: "none",
+                    MozAppearance: "none",
+                    paddingRight: "20px",
+                  }}
+                >
+                  <option value="" hidden name="calificacion">
+                    Seleccionar
+                  </option>
+                  <option className="option-select" value="Malo">
+                    Malo
+                  </option>
+                  <option className="option-select" value="Regular">
+                    Regular
+                  </option>
+                  <option className="option-select" value="Bueno">
+                    Bueno
+                  </option>
+                  <option className="option-select" value="Muy bueno">
+                    Muy bueno
+                  </option>
+                  <option className="option-select" value="Excelente">
+                    Excelente
+                  </option>
+                </select>
+              </div>
+            </div>
+          </form>
+          <hr className="mt-3" />
+          <form id="myForm8">
+            <div className="row">
+              <div className="col">
+                <div className="form-group">
+                  <input
+                    type="text"
+                    name="Correo del destinatario"
+                    placeholder=" "
+                    id="correo"
+                    autoComplete="off"
+                    required
+                  />
+                  <label for="email" className="label-name">
+                    <span className="content-name">
+                      Correo del destinatario
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <hr className="mt-3" />
+            <div className="row">
+              <div className="col">
+                {/* <select
+                  id="myCustomSelect"
+                  className="form-control custom-select mt-1"
+                  aria-label="Default select example"
+                  name="Calificación General del Vehículo"
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    borderBottom: "1px solid #ccc",
+                    backgroundImage:
+                      "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                    backgroundPosition: "right center",
+                    backgroundRepeat: "no-repeat",
+                    appearance: "none",
+                    WebkitAppearance: "none",
+                    MozAppearance: "none",
+                    paddingRight: "20px",
+                  }}
+                >
+                  <option value="" hidden name="solicitado">
+                    Solicitado por
+                  </option>
+                  <option className="option-select" value="Convencional">
+                    Convencional
+                  </option>
+                  <option className="option-select" value="Planes de ahorro">
+                    Planes de ahorro
+                  </option>
+                  <option className="option-select" value="Usados">
+                    Usados
+                  </option>
+                </select> */}
+                <div className="col mt-1">
+                  {
+                    <div>
+                      {selectedValueSolicitado === "" ? (
+                        <label
+                          htmlFor="myCustomSelect"
+                          className="label-select"
+                          style={{ color: "#f5f5f5" }}
+                        >
+                          vacio
+                        </label>
+                      ) : (
+                        <label
+                          htmlFor="myCustomSelect"
+                          className="label-select"
+                        >
+                          Solicitado por
+                        </label>
+                      )}
+                      <select
+                        id="myCustomSelect"
+                        className="form-control custom-select mt-1"
+                        name="Solicitado por"
+                        aria-label="Default select example"
+                        value={selectedValueSolicitado}
+                        onChange={handleSelectChangeSolicitado}
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          borderBottom: "1px solid #ccc",
+                          backgroundImage:
+                            "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                          backgroundPosition: "right center",
+                          backgroundRepeat: "no-repeat",
+                          appearance: "none",
+                          WebkitAppearance: "none",
+                          MozAppearance: "none",
+                          paddingRight: "20px",
+                        }}
+                      >
+                        <option value="" hidden name="solicitado">
+                          Solicitado por
+                        </option>
+                        <option className="option-select" value="Convencional">
+                          Convencional
+                        </option>
+                        <option
+                          className="option-select"
+                          value="Planes de ahorro"
+                        >
+                          Planes de ahorro
+                        </option>
+                        <option className="option-select" value="Usados">
+                          Usados
+                        </option>
+                      </select>
+                    </div>
+                  }
+                </div>
+              </div>
+              <div className="col">
+                {
+                  <div>
+                    {selectedValuePeritomecanico === "" ? (
+                      <label
+                        htmlFor="myCustomSelect"
+                        className="label-select"
+                        style={{ color: "#f5f5f5" }}
+                      >
+                        vacio
+                      </label>
+                    ) : (
+                      <label htmlFor="myCustomSelect" className="label-select">
+                        Perito mecánico
+                      </label>
+                    )}
+                    <select
+                      id="myCustomSelect"
+                      className="form-control custom-select mt-1"
+                      name="Peritaje mecánico"
+                      aria-label="Default select example"
+                      value={selectedValuePeritomecanico}
+                      onChange={handleSelectChangePeritomecanico}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        borderBottom: "1px solid #ccc",
+                        backgroundImage:
+                          "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                        backgroundPosition: "right center",
+                        backgroundRepeat: "no-repeat",
+                        appearance: "none",
+                        WebkitAppearance: "none",
+                        MozAppearance: "none",
+                        paddingRight: "20px",
+                      }}
+                    >
+                      <option value="" hidden name="solicitado">
+                        Peritaje mecánico
+                      </option>
+                      <option className="option-select" value="Perito 1">
+                        Perito 1
+                      </option>
+                      <option className="option-select" value="Perito 2">
+                        Perito 2
+                      </option>
+                      <option className="option-select" value="Perito 3">
+                        Perito 3
+                      </option>
+                    </select>
+                  </div>
+                }
+              </div>
+            </div>
+            <hr className="mt-3" />
+            <div className="row">
+              <div className="col">
+                {
+                  <div>
+                    {selectedValuePeritochapa === "" ? (
+                      <label
+                        htmlFor="myCustomSelect"
+                        className="label-select"
+                        style={{ color: "#f5f5f5" }}
+                      >
+                        vacio
+                      </label>
+                    ) : (
+                      <label htmlFor="myCustomSelect" className="label-select">
+                        Peritaje chapa y pintura
+                      </label>
+                    )}
+                    <select
+                      id="myCustomSelect"
+                      className="form-control custom-select mt-1"
+                      name="Peritaje de chapa y pintura"
+                      aria-label="Default select example"
+                      value={selectedValuePeritochapa}
+                      onChange={handleSelectChangePeritochapa}
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        borderBottom: "1px solid #ccc",
+                        backgroundImage:
+                          "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
+                        backgroundPosition: "right center",
+                        backgroundRepeat: "no-repeat",
+                        appearance: "none",
+                        WebkitAppearance: "none",
+                        MozAppearance: "none",
+                        paddingRight: "20px",
+                      }}
+                    >
+                      <option value="" hidden name="solicitado">
+                        Peritaje chapa y pintura
+                      </option>
+                      <option className="option-select" value="Perito 1">
+                        Perito 1
+                      </option>
+                      <option className="option-select" value="Perito 2">
+                        Perito 2
+                      </option>
+                      <option className="option-select" value="Perito 3">
+                        Perito 3
+                      </option>
+                    </select>
+                  </div>
+                }
+              </div>
+            </div>
+            <hr className="mt-3" />
+          </form>
+          <form id="myForm9">
+            <div className="row">
+            <div className="col"></div>
+              <div className="col">
+                <div className="form-group mt-2">
+                  <input
+                    type="text"
+                    name="Valor Tasado"
+                    placeholder=" "
+                    id="valor"
+                    autoComplete="off"
+                    pattern="[0-9]*"
+                    maxLength={9}
+                    required
+                    onKeyPress={handleKeyPress}
+                    value={"$" + inputTasado} // Agrega el signo "$" al valor ingresado
+                    onInput={handleInputTasado} // Actualiza el valor ingresado en el estado
+                  />
+                  <label htmlFor="valor" className="label-name">
+                    <span
+                      className="content-name"
+                      style={{ marginTop: "-5px" }}
+                    >
+                      Valor Tasado
+                    </span>
+                  </label>
+                </div>
+              </div>
+              <div className="col"></div>
+            </div>
+          </form>
         </div>
-        <hr className="mt-3" />
       </div>
-     
       {/* <PDFDownloadLink document={generarPDF()} fileName="PireRayenTasacion.pdf">
         {({ blob, url, loading, error }) =>
         
@@ -3674,33 +4656,33 @@ export default function Home() {
         }
       </PDFDownloadLink> */}
       <PDFDownloadLink document={generarPDF()} fileName="PireRayenTasacion.pdf">
-  {({ blob, url, loading, error }) => (
-    <button
-      onClick={(event) => {
-        event.preventDefault();
-        Swal.fire({
-          title: '¿Deseas finalizar y descargar el PDF?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Sí',
-          cancelButtonText: 'No',
-          customClass: {
-            confirmButton: 'swal2-confirm-color',
-          },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.open(url, '_blank');
-          }
-        });
-      }}
-    >
-      {loading ? 'Generando PDF...' : 'Finalizar'}
-    </button>
-  )}
-</PDFDownloadLink>
-     
-      <hr className="mt-3" />
+        {({ blob, url, loading, error }) => (
+          <button
+            onClick={(event) => {
+              event.preventDefault();
+              Swal.fire({
+                title: "¿Deseas finalizar y descargar el PDF?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Sí",
+                cancelButtonText: "No",
+                customClass: {
+                  confirmButton: "swal2-confirm-color",
+                },
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  window.open(url, "_blank");
+                }
+              });
+            }}
+            style={{marginTop:"2%"}}
+          >
+            {loading ? "Generando PDF..." : "Finalizar"}
+          </button>
+        )}
+      </PDFDownloadLink>
 
+      <hr className="mt-3" />
     </div>
   );
 }

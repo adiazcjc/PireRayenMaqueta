@@ -1,6 +1,7 @@
 import './App.css';
 import {BrowserRouter, Route, Switch} from 'react-router-dom'
 import Home from './components/Home'
+import 'bootstrap/dist/css/bootstrap.min.css';
  
 function App() {
   return (

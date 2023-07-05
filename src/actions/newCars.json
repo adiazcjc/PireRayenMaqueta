@@ -1,5 +1,106 @@
 [
   {
+    "id": 15,
+    "marca": "Alfa Romeo",
+    "image": "",
+    "modelo": [
+      {
+        "id": 15.1,
+        "name": "147",
+        "version": [
+          "1.6 TS Progression (120cv) 3Ptas.",
+          "1.6 TS Progression (120cv) 5Ptas.",
+          "1.9 JTD (150cv) 5Ptas.",
+          "1.9 JTD Cuero TC (150cv) 5Ptas.",
+          "2.0 TS MT (150cv) 5Ptas.",
+          "2.0 TS Selespeed (150cv) 5Ptas."
+        ]
+      },
+      {
+        "id": 15.2,
+        "name": "159",
+        "version": [
+          "1.8 TBi 6MT Cuero TC (200cv)",
+          "1.9 JTD Progression (150cv)",
+          "2.2 JTS 6MT Progression (185cv)",
+          "2.2 JTS Selespeed Cuero (185cv)",
+          "3.2 JTS 4x4 (260cv)"
+        ]
+      },
+      {
+        "id": 15.3,
+        "name": "Brera",
+        "version": ["2.2 JTS Selespeed Cuero (185cv)", "3.2 V6 JTS 4x4 (260cv)"]
+      },
+      {
+        "id": 15.4,
+        "name": "Giulia",
+        "version": [
+          "2.0T AT AWD Veloce (280cv)",
+          "2.0T AT RDW Distinctive (200cv)",
+          "2.9 Biturbo AT RWD Quadrifoglio (510cv)"
+        ]
+      },
+      {
+        "id": 15.5,
+        "name": "Giulietta",
+        "version": [
+          "1.4 Tbi MultiAir 6MT Distinctive (170hp)",
+          "1.4 Tbi MultiAir 6MT Progression (170hp)",
+          "1.4 Tbi MultiAir TCT Distinctive (170hp)",
+          "1.4Tbi 6MT Distinctive (120hp)",
+          "1.4Tbi 6MT Progression (120hp)",
+          "1.4Tbi 6MT Sprint (120hp)",
+          "1.8Tbi 6MT Quadrifoglio Verde (230cv)",
+          "1.8Tbi Veloce TCT (240cv)"
+        ]
+      },
+      {
+        "id": 15.6,
+        "name": "GT",
+        "version": [
+          "1.9 JTD Distinctive (150cv)",
+          "2.0 TC",
+          "2.0 TC Seespeed",
+          "3.2 V6 JTS (240cv)"
+        ]
+      },
+      {
+        "id": 15.7,
+        "name": "Mito",
+        "version": [
+          "1.4 6MT Junior (78cv)",
+          "1.4 MT Progression (78cv)",
+          "1.4 Multiair 6MT Progression (105cv)",
+          "1.4 Multiair TCT Distinctive (135cv)",
+          "1.4 Multiair TCT Distinctive TC (135cv)",
+          "1.4 Multiair TCT Progression (105cv)",
+          "1.4 Tbi 5MT Sport (135cv)",
+          "1.4 Tbi 5MT Sport TC (135cv)",
+          "1.4 Tbi 6MT Distinctive (155cv)",
+          "1.4 Tbi 6MT Distinctive TC (155cv)",
+          "1.4T 6MT Quadrifoglio Verde (170cv)",
+          "1.4T Veloce MT6 (170cv)",
+          "1.4T Veloce TCT (170cv)"
+        ]
+      },
+      {
+        "id": 15.8,
+        "name": "Spider",
+        "version": ["2.2 JTS (185cv)", "3.2 V6 JTS 4x4 (260cv)"]
+      },
+      {
+        "id": 15.9,
+        "name": "Stelvio",
+        "version": [
+          "2.0T AT AWD Distinctive (200cv)",
+          "2.0T AT AWD Veloce (280cv)",
+          "2.9 Biturbo AT RWD Quadrifoglio (510cv)"
+        ]
+      }
+    ]
+  },
+  {
     "id": "1",
     "marca": "Audi",
     "image": "https://assets.stickpng.com/images/580b585b2edbce24c47b2c18.png",
@@ -442,6 +543,300 @@
           "RS Coupé 2.5 TFSi S-Tronic Quattro (400cv) (L17)",
           "TTS Coupé 2.0 TFSi S-Tronic Quattro (310cv) (L17)",
           "TTS Roadster 2.0 TFSi S-Tronic Quattro (310cv) (L17)"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "17",
+    "marca": "BMW",
+    "image": "",
+    "modelo": [
+      {
+        "id": 17.1,
+        "name": "Serie 1",
+        "version": [
+          "116i Active (115cv) 3Ptas. (L10)",
+          "116i Active (115cv) 5Ptas. (L06)",
+          "118d Sport (143cv) 5Ptas. (L12)",
+          "118i Active (136cv) 3Ptas. (L10)",
+          "118i Active (136cv) 5Ptas. (L10)",
+          "118i Active (136cv) 5Ptas. (L16)",
+          "118i Advantage (140cv) 5Ptas. (L20)",
+          "118i Sport (136cv) 5Ptas.(L16)",
+          "118i Sport (170cv) 5Ptas. (L12)",
+          "118i Sport Line (140cv) 5Ptas. (L20)",
+          "120d Active (177cv) 5Ptas. (L06)",
+          "120d Sport (184cv) 5Ptas. (L12)",
+          "120d Urban (184cv) 5Ptas. (L12)",
+          "120i Active (156cv) 5Ptas. (L06)",
+          "120i Active (177cv) 3Ptas. (L16)",
+          "120i Active (177cv) 5Ptas. (L16)",
+          "120i Active Cabrio (156cv) (L06)",
+          "120i Executive Coupé (156cv) (L10)",
+          "120i M Package (177cv) 5Ptas. (L16)",
+          "120i Sport (184cv) 5Ptas. (L16)",
+          "120i Sport Line (177cv) 5Ptas. (L16)",
+          "125d (218cv) 5Ptas. (L12)",
+          "125i Active Coupé (L06)",
+          "125i Executive Coupé (218cv) (L06)",
+          "125i Sport Line (218cv) 3Ptas. (L12)",
+          "125i Sportive Coupé (L06)",
+          "130i Limited (258cv) 3Ptas. (L10)",
+          "130i M Sport Package (258cv) 5Ptas. (L06)",
+          "135i M Performance (320cv) 3Ptas. (L12)",
+          "135i Sportive Coupé (306cv) (L06)",
+          "M1 Coupé (340cv)",
+          "M135 xDrive M Performence (306cv) 5Ptas.",
+          "M140i 3.0 AT8 (340cv) 5Ptas.",
+          "M140i 3.0 AT8 (340cv) Coupé"
+        ]
+      },
+      {
+        "id": 17.2,
+        "name": "Serie 2",
+        "version": [
+          "218i Gran Coupé Advantage (140cv)",
+          "220i Cabrio LCI Sport (184cv)",
+          "220i Cabrio Sport (184cv)",
+          "220i Coupé LCI II MSport (184cv)",
+          "220i Coupé LCI Sport (184cv)",
+          "220i Coupé LCI SportLine (184cv)",
+          "220i Coupé Sport (184cv)",
+          "M2 Coupé (370cv)",
+          "M235i Coupé Package M (326cv)",
+          "M235i xDrive Gran Coupé MPerformance (306cv)",
+          "M240i Cabrio Package M (340cv)",
+          "M240i Coupé LCI II MPerformance (340cv)",
+          "M240i Coupé LCI Sport (340cv)",
+          "M240i Coupé Package M (340cv)",
+          "M240i xDrive Coupé MPerformance (388cv)"
+        ]
+      },
+      {
+        "id": 17.3,
+        "name": "Serie 3",
+        "version": [
+          "320d Sedán Active",
+          "320d Sedán Executive (184cv) (L09)",
+          "320d Sedán Selective",
+          "320d Sport/Luxury Sedán (184cv) (L12)",
+          "320d Touring Active",
+          "320i Coupé Executive (L09)",
+          "320i Sedán Active (156cv)",
+          "320i Sedán Executive (184cv)",
+          "320i Sedán Executive / Premium (156cv) (L09)",
+          "320i Sedán Sport Line (184cv)",
+          "323i Sedán Active",
+          "325i Cabrio Pack M (L09)",
+          "325i Coupé Executive",
+          "325i Sedán Executive (L09)",
+          "325i Sedán X Drive",
+          "328i Gran turismo Luxury (245cv) Sedán (L12)",
+          "328i Sedán Sport/Luxury (245cv) (L12)",
+          "330d Sedán Executive",
+          "330i Cabrio Executive (258cv)",
+          "330i Sedán Dynamic",
+          "330i Sedán Executive",
+          "330i Sedán Executive (258cv) (L09)",
+          "330i Sedán Sport Line (252cv)",
+          "330i Sedán Sport Line Shadow (252cv)",
+          "335i Coupé Executive (L07)",
+          "335i Coupé Package M Sport Biturbo (306cv) (L12)",
+          "335i Sedán (L09)",
+          "335i Sedán Executive (L07)",
+          "335i Sedán Package M Sport Biturbo (306cv) (L12)",
+          "335i Sedán Package M Sport Biturbo (L07)",
+          "335i Sedán X Drive (L09)",
+          "M3 4.0 V8 Black & White Edition (420cv)",
+          "M3 4.0 V8 MT Sport Coupé (420cv)",
+          "M3 Sedán (431cv)",
+          "M340i xDrive MPerformance Sedán (387cv)"
+        ]
+      },
+      {
+        "id": 17.4,
+        "name": "Serie 4",
+        "version": [
+          "428i Coupé Sport Line (245cv)",
+          "430i Coupé M Sport Package (258cv)",
+          "430i Coupé Sport Line (252cv)",
+          "430i Gran Coupé Sport (252cv)",
+          "435i Coupé M Package (306cv)",
+          "435i Gran Coupé M Package (306cv)",
+          "440i Cabrio (326cv)",
+          "440i Coupé M Package (326cv)",
+          "440i Gran Coupé M Package (326cv)",
+          "M4 Coupé (431cv)",
+          "M440i Coupé xDrive M Performance (387cv)"
+        ]
+      },
+      {
+        "id": 17.5,
+        "name": "Serie 5",
+        "version": [
+          "525d Executive (204cv)",
+          "525d Executive (218cv)",
+          "528i Executive (258cv)",
+          "530d Executive (218cv)",
+          "530d Executive (245cv)",
+          "530i Executive",
+          "530i Executive (258cv)",
+          "530i Package M (252cv)",
+          "530i Package M (252cv) (L17)",
+          "535i Executive (306cv)",
+          "535i Gran Turismo Executive (306cv)",
+          "535i Package M (306cv)",
+          "540i Package M (340cv) (L17)",
+          "550i Premium",
+          "550i Premium (407cv)",
+          "M5",
+          "M5 Premium (507cv)",
+          "M5 Sedan 35 Jahre (625cv)"
+        ]
+      },
+      {
+        "id": 17.6,
+        "name": "Serie 6",
+        "version": [
+          "640i Sportive Cabrio (L12) (320cv)",
+          "640i Sportive Coupé (L12) (320cv)",
+          "650Ci Cabrio Premium",
+          "650Ci Coupé Premium",
+          "650i Coupé Package M (449cv)",
+          "650i Grand Coupé Package M (449cv)",
+          "M6 (507cv)",
+          "M6 Grand Coupé (560cv)"
+        ]
+      },
+      {
+        "id": 17.7,
+        "name": "Serie 7",
+        "version": [
+          "750i Premium (407cv)",
+          "750i Premium Pack M (449cv)",
+          "750Li xDrive MSport Pure Exc. (530cv)"
+        ]
+      },
+      {
+        "id": 17.8,
+        "name": "Serie 8",
+        "version": [
+          "M850I MPerformance Coupé (530cv)",
+          "M850I xDrive Coupé (530cv)"
+        ]
+      },
+      {
+        "id": 17.9,
+        "name": "X1",
+        "version": [
+          "18i sDrive Active (140cv)",
+          "18i sDrive Advantage (140cv)",
+          "20d sDrive Active MT 4x2 (177cv)",
+          "20d xDrive Active AT 4x4 (177cv)",
+          "20d xDrive Active MT 4x4 (177cv)",
+          "20i sDrive Active (184cv)",
+          "20i sDrive SportLine (192cv)",
+          "20i sDrive SportLine (192cv)",
+          "20i xDrive Excecutive (184cv)",
+          "25i xDrive xLine (231cv)",
+          "28i xDrive Executive (265cv)"
+        ]
+      },
+      {
+        "id": 17.1,
+        "name": "X2",
+        "version": ["M35i MPerformance (306cv)", "sDrive20i MSportX (192cv)"]
+      },
+      {
+        "id": 17.11,
+        "name": "X3",
+        "version": [
+          "2.5si Selective",
+          "3.0d Executive",
+          "3.0si Executive",
+          "M (480cv)",
+          "M40I Performance M (360cv)",
+          "sDrive 20i (184cv)",
+          "xDrive 20d Executive (184cv)",
+          "xDrive 20i (184cv)",
+          "xDrive 25i Limited Edition (218cv)",
+          "xDrive 28i xLine (245cv)",
+          "xDrive 30i Advantage (252cv)",
+          "xDrive 30i MSport (252cv)",
+          "xDrive 30i xLine (252cv)",
+          "xDrive 30i xLine S-Line (184cv)",
+          "xDrive 30i xLine Sport (192cv)",
+          "xDrive 35i M Package (306cv)",
+          "xDrive 35i Sportive (306cv)",
+          "xDrive20i LCI xLine (184cv)",
+          "xDrive30e LCI xLine (292cv)",
+          "xDrive30i LCI xLine (252cv)"
+        ]
+      },
+      {
+        "id": 17.12,
+        "name": "X4",
+        "version": [
+          "20i xDrive Active (184cv)",
+          "28i xDrive xLine (245cv)",
+          "35i xDrive M Package (306cv)",
+          "M40i MPerformance (388cv)",
+          "xDrive 3.0i xLine (252cv)",
+          "xDrive M40i (354hp)"
+        ]
+      },
+      {
+        "id": 17.13,
+        "name": "X5",
+        "version": [
+          "3.0 Executive",
+          "3.0d Executive",
+          "30d xDrive Executive (245cv)",
+          "35i xDrive Executive (306cv)",
+          "35i xDrive Pure Excellence (306cv)",
+          "4.8is/A Premium",
+          "40d xDrive M Sport / Pure Excellence (313cv)",
+          "40i xDrive xLine (340cv)",
+          "50i xDrive M Sport (449cv)",
+          "50i xDrive Premium (407cv)",
+          "50i xDrive Premium Security (407cv)",
+          "M (555cv)",
+          "M (575cv) (L17)"
+        ]
+      },
+      {
+        "id": 17.14,
+        "name": "X6",
+        "version": [
+          "30d xDrive Executive (245cv)",
+          "35i xDrive 3.0 Sportive (306cv)",
+          "35i xDrive Pure Extravagance (306cv)",
+          "40i xDrive MSport (340cv)",
+          "50i xDrive 4.4 Premium (407cv)",
+          "50i xDrive M Package (449cv)",
+          "M (555cv)",
+          "M (575cv) (L17)",
+          "M (600cv)"
+        ]
+      },
+      {
+        "id": 17.15,
+        "name": "X7",
+        "version": ["50i MPerformance (530cv)"]
+      },
+      {
+        "id": 17.16,
+        "name": "Z4",
+        "version": [
+          "3.0i Executive Roadster (258cv)",
+          "3.0si Coupé",
+          "sDrive 20i Executive Roadster (184cv)",
+          "sDrive 23i Active Roadster (204cv)",
+          "sDrive 28i Executive Roadster (245cv)",
+          "sDrive 30i MSport (258cv)",
+          "sDrive 35i M Package (306cv)",
+          "sDrive 35is M Package (340cv)"
         ]
       }
     ]
@@ -1721,6 +2116,434 @@
           "1.6 16v Adventure (115cv)",
           "1.6 16v Adventure Extreme (115cv)",
           "1.6 16v Adventure Locker (115cv)"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "16",
+    "marca": "Ford",
+    "image": "",
+    "modelo": [
+      {
+        "id": "16.1",
+        "name": "Bronco",
+        "version": [
+          "Sport 1.5 EcoBoost Big Bend",
+          "Sport 2.0 EcoBoost Wildtrack"
+        ]
+      },
+      {
+        "id": "16.2",
+        "name": "Courier",
+        "version": ["Pick-up 1.6 N Base", "Pick-up 1.6 N Plus"]
+      },
+      {
+        "id": "16.3",
+        "name": "EcoSport",
+        "version": [
+          "1.4 TDI XL Plus MP3 (L08)",
+          "1.4 TDI XLS MP3 (L08)",
+          "1.6 XL Plus MP3 (L08)",
+          "1.6 XLS MP3 (L08)",
+          "1.6 XLT Free Style (L08)",
+          "1.6 XLT Plus MP3 (L08)",
+          "2.0 XLS (L08)",
+          "2.0 XLT (L08)",
+          "2.0 XLT 4X4 Plus Cuero (L08)",
+          "2.0 XLT Night Running Ed. Limit. (L08)",
+          "2.0 XLT Plus AT Cuero (L08)",
+          "2.0 XLT Plus Cuero (L08)"
+        ]
+      },
+      {
+        "id": "16.4",
+        "name": "EcoSport KD",
+        "version": [
+          "1.5 Freestyle MT (123cv) (L18)",
+          "1.5 S MT (123cv) (L18)",
+          "1.5 SE AT (123cv) (L18)",
+          "1.5 SE MT (123cv) (L18) DISCONTINUO",
+          "1.5 TDCi MT (100cv) (L18)",
+          "1.5 TDCi MT S (90cv)",
+          "1.5 TDCi MT SE (90cv)",
+          "1.5 Titanium AT (123cv) (L18) DISCONTINUO",
+          "1.5 Titanium MT (123cv) (L18) DISCONTINUO",
+          "1.6 Freestyle MT (110cv)",
+          "1.6 S MT (110cv)",
+          "1.6 SE MT (110cv)",
+          "1.6 Titanium MT (110cv)",
+          "2.0 4x4 Freestyle MT (143cv)",
+          "2.0 Freestyle 4WD AT (170cv) (L18)",
+          "2.0 GDI Titanium AT (170cv) (L18)",
+          "2.0 SE AT (170cv) (L18)",
+          "2.0 SE MT (143cv)",
+          "2.0 Titanium AT (143cv)",
+          "2.0 Titanium AT (170cv) (L18)",
+          "2.0 Titanium MT (143cv)",
+          "STORM 2.0 4WD AT (170cv) (L18)"
+        ]
+      },
+      {
+        "id": "16.5",
+        "name": "F-100",
+        "version": [
+          "3.9 TDI C/Doble 4x2 XL Plus",
+          "3.9 TDI C/Doble 4x2 XLT",
+          "3.9 TDI C/Doble 4x4 XL Plus",
+          "3.9 TDI C/Doble 4x4 XLT",
+          "3.9 TDI C/Simple 4x2 XL Base",
+          "3.9 TDI C/Simple 4x2 XL Plus",
+          "3.9 TDI C/Simple 4x2 XLT",
+          "3.9 TDI C/Simple 4x4 XL Plus",
+          "3.9 TDI C/Simple 4x4 XLT"
+        ]
+      },
+      {
+        "id": "16.6",
+        "name": "F-150",
+        "version": [
+          "Lariat 5.0 AT 4x4 Luxury (400cv)",
+          "Lariat Luxury 3.5L V6 Híbrida 4x4 AT (400cv-45cv)",
+          "Raptor 3.5 Biturbo AT 4x4 (456cv)"
+        ]
+      },
+      {
+        "id": "16.7",
+        "name": "Fiesta",
+        "version": [
+          "5Ptas. 1.4 TD Ambiente / Plus",
+          "5Ptas. 1.4 TD Edge",
+          "5Ptas. 1.6 N Ambiente",
+          "5Ptas. 1.6 N Ambiente AT",
+          "5Ptas. 1.6 N Ambiente Plus",
+          "5Ptas. 1.6 N Ambiente Plus MP3 (98cv) (L11)",
+          "5Ptas. 1.6 N Edge Plus",
+          "5Ptas. 1.6 N Edge Plus AT",
+          "5Ptas. 1.6 N Edge Plus MP3 (98cv) (L11)",
+          "5Ptas. 1.6 N Energy",
+          "Max 4Ptas. 1.4 TD Ambiente / Plus",
+          "Max 4Ptas. 1.4 TD Edge",
+          "Max 4Ptas. 1.6 N Ambiente",
+          "Max 4Ptas. 1.6 N Ambiente AT",
+          "Max 4Ptas. 1.6 N Ambiente Plus",
+          "Max 4Ptas. 1.6 N Ambiente Plus MP3 (98cv) (L11)",
+          "Max 4Ptas. 1.6 N Edge Plus",
+          "Max 4Ptas. 1.6 N Edge Plus AT",
+          "Max 4Ptas. 1.6 N Edge Plus MP3 (98cv) (L11)",
+          "Max 4Ptas. 1.6 N Energy"
+        ]
+      },
+      {
+        "id": "16.8",
+        "name": "Fiesta KD",
+        "version": [
+          "1.6 S MT (120cv) 4Ptas.",
+          "1.6 S MT (120cv) 5Ptas.",
+          "1.6 S Plus MT (120cv) 4Ptas.",
+          "1.6 S Plus MT (120cv) 5Ptas.",
+          "1.6 SE MT (120cv) 5Ptas.",
+          "1.6 SE Plus MT (120cv) 4Ptas.",
+          "1.6 SE Plus MT (120cv) 5Ptas.",
+          "1.6 SE Plus Powershift (120cv) 4Ptas.",
+          "1.6 SE Plus Powershift (120cv) 5Ptas.",
+          "1.6 SE Powershift (120cv) 5Ptas.",
+          "1.6 Titanium (120cv) 5Ptas. (L10)",
+          "1.6 Titanium MT (120cv) 4Ptas.",
+          "1.6 Titanium MT (120cv) 5Ptas.",
+          "1.6 Titanium Powershift (120cv) 4Ptas.",
+          "1.6 Titanium Powershift (120cv) 5Ptas.",
+          "1.6 Trend (120cv) 4Ptas. (L10)",
+          "1.6 Trend (120cv) 5Ptas. (L10)",
+          "1.6 Trend Plus (120cv) 4Ptas. (L10)"
+        ]
+      },
+      {
+        "id": "16.9",
+        "name": "Focus",
+        "version": [
+          "4Ptas. Ambiente 1.6 MP3",
+          "4Ptas. Ambiente 1.8 TDI MP3 (90cv)",
+          "4Ptas. Edge 1.6 MP3",
+          "4Ptas. Edge 1.8 TDI MP3 (90cv)",
+          "4Ptas. Edge 2.0 Nafta AT MP3",
+          "4Ptas. Edge 2.0 Nafta MP3",
+          "4Ptas. Ghia 1.8 TDCi (115cv)",
+          "4Ptas. Ghia 2.0 Nafta",
+          "5Ptas. Ambiente 1.6 MP3",
+          "5Ptas. Ambiente 1.8 TDI MP3 (90cv)",
+          "5Ptas. Edge 1.6 MP3",
+          "5Ptas. Edge 1.8 TDi MP3 (90cv)",
+          "5Ptas. Edge 2.0 Nafta",
+          "5Ptas. Ghia 1.8 TDCi (115cv)",
+          "5Ptas. Ghia 2.0 Nafta",
+          "II 5Ptas. 1.6 Sigma Style",
+          "II 5Ptas. 1.6 Sigma Trend",
+          "II 5Ptas. 1.8 TDCI Ghia (L08)",
+          "II 5Ptas. 1.8 TDCI Style (L08)",
+          "II 5Ptas. 1.8 TDCI Trend Plus (L08)",
+          "II 5Ptas. 2.0 N Ghia (L08)",
+          "II 5Ptas. 2.0 N Ghia AT/Seq. (L08)",
+          "II 5Ptas. 2.0 N Trend (L08)",
+          "II 5Ptas. 2.0 N Trend Plus (L08)",
+          "II EXE 4Ptas. 1.6 Sigma Style",
+          "II EXE 4Ptas. 1.6 Sigma Trend",
+          "II EXE 4Ptas. 1.8 TD Ghia (L08)",
+          "II EXE 4Ptas. 1.8 TD Style (L08)",
+          "II EXE 4Ptas. 1.8 TD Trend Plus (L08)",
+          "II EXE 4Ptas. 2.0 N Ghia (L08)",
+          "II EXE 4Ptas. 2.0 N Ghia AT (L08)",
+          "II EXE 4Ptas. 2.0 N Trend (L08)",
+          "II EXE 4Ptas. 2.0 N Trend Plus (L08)"
+        ]
+      },
+      {
+        "id": "16.10",
+        "name": "Focus III",
+        "version": [
+          "1.6 S MT (125cv) 4Ptas.",
+          "1.6 S MT (125cv) 4Ptas. (L15)",
+          "1.6 S MT (125cv) 5Ptas.",
+          "1.6 S MT (125cv) 5Ptas. (L15)",
+          "2.0 SE AT (170cv) 4Ptas. (L15)",
+          "2.0 SE AT (170cv) 5Ptas. (L15)",
+          "2.0 SE MT (170cv) 4Ptas.",
+          "2.0 SE MT (170cv) 4Ptas. (L15)",
+          "2.0 SE MT (170cv) 5Ptas.",
+          "2.0 SE MT (170cv) 5Ptas. (L15)",
+          "2.0 SE Plus AT (170cv) 4Ptas.",
+          "2.0 SE Plus AT (170cv) 4Ptas. (L15)",
+          "2.0 SE Plus AT (170cv) 5Ptas.",
+          "2.0 SE Plus AT (170cv) 5Ptas. (L15)",
+          "2.0 SE Plus MT (170cv) 4Ptas.",
+          "2.0 SE Plus MT (170cv) 4Ptas. (L15)",
+          "2.0 SE Plus MT (170cv) 5Ptas.",
+          "2.0 SE Plus MT (170cv) 5Ptas. (L15)",
+          "2.0 Titanium AT (170cv) 4Ptas.",
+          "2.0 Titanium AT (170cv) 4Ptas. (L15)",
+          "2.0 Titanium AT (170cv) 5Ptas.",
+          "2.0 Titanium AT (170cv) 5Ptas. (L15)",
+          "2.0 Titanium MT (170cv) 4Ptas.",
+          "2.0 Titanium MT (170cv) 4Ptas. (L15)",
+          "2.0 Titanium MT (170cv) 5Ptas.",
+          "2.0 Titanium MT (170cv) 5Ptas. (L15)"
+        ]
+      },
+      {
+        "id": "16.11",
+        "name": "KA",
+        "version": [
+          "1.0 Energy MP3",
+          "1.0 Fly (L/08)",
+          "1.0 Fly Plus (L/08)",
+          "1.0 Fly Viral (L/08)",
+          "1.0 Tatoo",
+          "1.0 Tatoo Plus",
+          "1.0 Viral MP3",
+          "1.5 S (105cv) 4Ptas.",
+          "1.5 S (105cv) 5Ptas.",
+          "1.5 S MT (123cv) 4Ptas. (L18)",
+          "1.5 S MT (123v) 5Ptas. (L18)",
+          "1.5 SE (105cv) 4Ptas.",
+          "1.5 SE (105cv) 5Ptas.",
+          "1.5 SE AT (123cv) 4Ptas. (L18)",
+          "1.5 SE AT (123cv) 5Ptas. (L18)",
+          "1.5 SE Freestyle MT (123cv) 5Ptas. (L18)",
+          "1.5 SE MT (123cv) 4Ptas. (L18)",
+          "1.5 SE MT (123cv) 5Ptas. (L18)",
+          "1.5 SEL (105cv) 4Ptas.",
+          "1.5 SEL (105cv) 5Ptas.",
+          "1.5 SEL AT (123cv) 4Ptas. (L18)",
+          "1.5 SEL AT (123cv) 5Ptas. (L18)",
+          "1.5 SEL Freestyle AT (123cv) 5Ptas. (L18)",
+          "1.5 SEL Freestyle MT (123cv) 5Ptas. (L18)",
+          "1.5 SEL MT (123cv) 4Ptas. (L18)",
+          "1.5 SEL MT (123cv) 5Ptas. (L18)",
+          "1.6 Action",
+          "1.6 Fly Viral (L/08)",
+          "1.6 Pulse (L/08)",
+          "1.6 Revolution",
+          "1.6 Tatoo Plus",
+          "1.6 Top Pulse (L/08)"
+        ]
+      },
+      {
+        "id": "16.12",
+        "name": "Kuga",
+        "version": [
+          "1.6t SEL 6AT AWD (182cv)",
+          "1.6T SEL 6MT FWD (150cv)",
+          "1.6t Titanium AT AWD (182cv)",
+          "2.0 GTdi Titanium 6Sec. AWD (240cv) (L17)",
+          "2.0 GTdi Titanium Sec. AWD (240cv)",
+          "2.0 SEL 6Sec. AWD (240cv) (L17)",
+          "2.0 SEL 6Sec. FWD (240cv) (L17)",
+          "2.5T AT Titanium 4x4 (200cv)",
+          "2.5T AT Titanium L 4x4 Cuero (200cv)",
+          "2.5T AT Titanium L 4x4 Cuero/Asiento eléct. (200cv)",
+          "2.5T MT Trend 4x4 (200cv)",
+          "Hybrid eCVT 2WD SE (2.5/e) (165cv-130cv/203cv) (L20)",
+          "Hybrid eCVT 2WD Titanium (2.5/e) (165cv-130cv/203cv) (L20)"
+        ]
+      },
+      {
+        "id": "16.13",
+        "name": "Maverick",
+        "version": [
+          "Lariat 2.0 Ecoboost AT8 4WD (253cv)",
+          "Lariat 2.5 Hybrid CVT 2WD (194cv)",
+          "XLT 2.0 Ecoboost AT8 2WD (253cv)"
+        ]
+      },
+      {
+        "id": "16.14",
+        "name": "Mondeo",
+        "version": [
+          "1.8 TDCi MT Ghia (L07)",
+          "1.8 TDCi MT Titanium (L07)",
+          "2.0 Ecoboost GTDI SEL (240cv) (L17)",
+          "2.0 Ecoboost GTDI Titanium (240cv) (L17)",
+          "2.0 Ecoboost SE AT (240cv) (L15)",
+          "2.0 Ecoboost Titanium AT (240cv) (L15)",
+          "2.0 GTDi Ecoboost Titanium AT 4Ptas. (240cv) (L11)",
+          "2.0 N MT Ghia (L07)",
+          "2.0 Tdci Ghia MT / AT 4Ptas. (140cv)",
+          "2.0 TDCi MT Guia (L07)",
+          "2.0 TDCi MT Titanium (L07)",
+          "2.0 Tdci Titanium AT 4Ptas. (140cv) (L11)",
+          "2.0h eCVT Titanium (140cv/L4)",
+          "2.0h eCVT Vignale (140cv/L4)",
+          "2.3 Duratec Ghia AT 4Ptas. (161cv) (L11)",
+          "2.3 Duratec Titanium AT 4Ptas. (161cv) L11)",
+          "2.3 N AT Ghia (L07)",
+          "2.3 N AT Titanium (L07)",
+          "2.5 N MT Titanium (L07)",
+          "2.5 SE AT (175cv) (L15)"
+        ]
+      },
+      {
+        "id": "16.15",
+        "name": "Mustang",
+        "version": [
+          "GT 5.0L 10AT (466cv)",
+          "GT 5.0L 6MT (421cv)",
+          "Mach 1 (480cv) DISCONTINUO"
+        ]
+      },
+      {
+        "id": "16.16",
+        "name": "Ranger",
+        "version": [
+          "2.2 TDCi C/Doble 4x2 XL 6MT (125cv) (L20)",
+          "2.2 TDCi C/Doble 4x2 XLT 6AT (125cv) (L20)",
+          "2.2 TDCi C/Doble 4x4 XL 6MT (125cv) (L20)",
+          "2.2 TDCi C/Doble 6MT 4x2 XL (L12)",
+          "2.2 TDCi C/Doble 6MT 4x2 XL Safety (L12)",
+          "2.2 TDCi C/Doble 6MT 4x4 XL Safety (L12)",
+          "2.2 TDCi C/Simple 4x2 XL 6MT (125cv) (L20)",
+          "2.2 TDCi C/Simple 4x4 XL 6MT (125cv) (L20)",
+          "2.2 TDCi C/Simple 6MT 4x2 XL Safety (L12)",
+          "2.2 TDCi C/Simple 6MT 4x4 XL Safety (L12)",
+          "2.3 Nafta C/D 4x2 XL Plus (148cv) (L09)",
+          "2.3 Nafta C/S 4x2 F-Truck (148cv) (L09)",
+          "2.3 Nafta/GNC C/Doble 4x2 F-Truck",
+          "2.3 Nafta/GNC C/Simple 4x2 F-Truck",
+          "2.5 N C/Doble 4x2 XL 6MT (166cv) (L20)",
+          "2.5 N C/Doble 4x2 XLT 6MT (166cv) (L20)",
+          "2.5 N C/Doble 5MT 4x2 XL (L12)",
+          "2.5 N C/Simple 4x2 XL 5MT (166cv) (L20)",
+          "2.5 N C/Simple 5MT 4x2 XL (L12)",
+          "3.0 TDI C/D 4x2 XL MP3 (L05)",
+          "3.0 TDI C/D 4x2 XL Base MP3 (163cv) (L09)",
+          "3.0 TDI C/D 4x2 XL Plus MP3 (163cv) (L09)",
+          "3.0 TDI C/D 4x2 XL Plus MP3 (L05)",
+          "3.0 TDI C/D 4x2 XLS MP3 (L05)",
+          "3.0 TDI C/D 4x2 XLS MP3 (163cv) (L09)",
+          "3.0 TDI C/D 4X2 XLT (163cv) (L09)",
+          "3.0 TDI C/D 4x2 XLT (L05)",
+          "3.0 TDI C/D 4x4 Limited (163cv) (L09)",
+          "3.0 TDI C/D 4x4 Super Duty (163cv) (L09)",
+          "3.0 TDI C/D 4x4 XL Plus MP3 (L05)",
+          "3.0 TDI C/D 4x4 XL Plus MP3 (163cv) (L09)",
+          "3.0 TDI C/D 4x4 XLT (163cv) (L09)",
+          "3.0 TDI C/D 4x4 XLT (L05)",
+          "3.0 TDI C/D 4x4 XLT Hardrive - Ed. Limit.(L05)",
+          "3.0 TDI C/D Limited 2 tonos (L05)",
+          "3.0 TDI C/S 4x2 F-Truck (163cv) (L09)",
+          "3.0 TDI C/S 4x2 F-Truck (L05)",
+          "3.0 TDI C/S 4x2 XL Plus (163cv) (L09)",
+          "3.0 TDI C/S 4x2 XL Plus (L05)",
+          "3.0 TDI C/S 4x4 XL Plus (163cv) (L09)",
+          "3.0 TDI C/S 4x4 XL Plus (L05)",
+          "3.2 TDCi C/Doble 4x2 XLS 6AT (200cv) (L20)",
+          "3.2 TDCi C/Doble 4x2 XLS 6MT (200cv) (L20)",
+          "3.2 TDCi C/Doble 4x2 XLT 6AT (200cv) (L20)",
+          "3.2 TDCi C/Doble 4x2 XLT 6MT (200cv) (L20)",
+          "3.2 TDCi C/Doble 4x4 Black Edition 6AT (200cv) (L20)",
+          "3.2 TDCi C/Doble 4x4 FX4 6AT (200cv) (L20)",
+          "3.2 TDCi C/Doble 4x4 Limited 6AT (200cv) (L20)",
+          "3.2 TDCi C/Doble 4x4 Limited 6MT (200cv) (L20)",
+          "3.2 TDCi C/Doble 4x4 XLS 6MT (200cv) (L20)",
+          "3.2 TDCi C/Doble 4x4 XLT 6AT (200cv) (L20)",
+          "3.2 TDCi C/Doble 4x4 XLT 6MT (200cv) (L20)",
+          "3.2 TDCi C/Doble 6AT 4x4 LTD (L12)",
+          "3.2 TDCi C/Doble 6MT 4x2 XLS (L12)",
+          "3.2 TDCi C/Doble 6MT 4x2 XLS AT (L12)",
+          "3.2 TDCi C/Doble 6MT 4x2 XLT (L12)",
+          "3.2 TDCi C/Doble 6MT 4x2 XLT AT (L12)",
+          "3.2 TDCi C/Doble 6MT 4x4 LTD (L12)",
+          "3.2 TDCi C/Doble 6MT 4x4 XLS (L12)",
+          "3.2 TDCi C/Doble 6MT 4x4 XLT (L12)",
+          "3.2 TDCi C/Doble 6MT 4x4 XLT AT (L12)",
+          "Raptor 2.0 Biturbo 4x4 AT (213cv) DISCONTINUO",
+          "Raptor 3.0 Biturbo 4x4 AT10 (397cv)"
+        ]
+      },
+      {
+        "id": "16.17",
+        "name": "S-Max",
+        "version": [
+          "Titanium 2.0 Ecoboost (240cv) (L17)",
+          "Titanium 2.3 N (161cv)",
+          "Trend 1.8 TDCi (125cv)",
+          "Trend 2.0 Ecoboost (240cv) (L17)",
+          "Trend 2.0 N"
+        ]
+      },
+      {
+        "id": "16.18",
+        "name": "Territory",
+        "version": [
+          "1.5T CVT SEL (143cv) DISCONTINUO",
+          "1.5T CVT Titanium (143cv) DISCONTINUO",
+          "1.8T AT7 SEL (185cv)",
+          "1.8T AT7 Titanium (185cv)"
+        ]
+      },
+      {
+        "id": "16.19",
+        "name": "Transit",
+        "version": [
+          "2.0 TD Furgón Largo AT10 TE (165cv) (L23)",
+          "2.0 TD Minibus (165cv) (L23)",
+          "2.0 TD Minibus AT10 (165cv) (L23)",
+          "2.2 / 2.4 TD Furgon Corto TM ABG ABS (125cv/115cv) (L11)",
+          "2.2 / 2.4 TD Furgon Corto TM ABG ABS AA (125cv/115cv) (L11)",
+          "2.2 / 2.4 TD Furgon Largo TA ABG ABS (125cv/115cv) (L11)",
+          "2.2 / 2.4 TD Furgon Largo TA ABG ABS AA (125cv/115cv) (L11)",
+          "2.2 / 2.4 TD Minibus 13+1 TM ABG ABS AA (125cv/115cv) (L11)",
+          "2.2 TD Chasis (125cv) (L23)",
+          "2.2 TD Chasis AA (L14) DISCONTINUO",
+          "2.2 TD Chasis Cabina (125cv)",
+          "2.2 TD Chasis Cabina AA (125cv)",
+          "2.2 TD Furgón Largo AA (L14)",
+          "2.2 TD Furgón Largo TE (125cv) (L23)",
+          "2.2 TD Furgón Largo TE AA (L14) DISCONTINUO",
+          "2.2 TD Furgón Medio (125cv) (L23)",
+          "2.2 TD Furgón Medio AA (L14) DISCONTINUO",
+          "2.2 TD Furgón Medio TE (125cv) (L23)",
+          "2.2 TD Furgón Medio TE AA (L14) DISCONTINUO",
+          "2.2 TD Minibus AA (L14) DISCONTINUO"
         ]
       }
     ]
