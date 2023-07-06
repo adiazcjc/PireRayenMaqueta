@@ -4541,17 +4541,20 @@ export default function Home() {
                         paddingRight: "20px",
                       }}
                     >
-                      <option value="" hidden name="solicitado">
+                      <option value="" hidden name="mecanico">
                         Peritaje mecánico
                       </option>
-                      <option className="option-select" value="Perito 1">
-                        Perito 1
+                      <option className="option-select" value="Diego Palomares">
+                        Diego Palomares
                       </option>
-                      <option className="option-select" value="Perito 2">
-                        Perito 2
+                      <option className="option-select" value="Claudio Bender">
+                        Claudio Bender
                       </option>
-                      <option className="option-select" value="Perito 3">
-                        Perito 3
+                      <option className="option-select" value="Jesús Beroiza">
+                        Jesús Beroiza
+                      </option>
+                      <option className="option-select" value="Miguel Aba">
+                        Miguel Aba
                       </option>
                     </select>
                   </div>
@@ -4597,18 +4600,16 @@ export default function Home() {
                         paddingRight: "20px",
                       }}
                     >
-                      <option value="" hidden name="solicitado">
+                      <option value="" hidden name="chapa">
                         Peritaje chapa y pintura
                       </option>
-                      <option className="option-select" value="Perito 1">
-                        Perito 1
+                      <option className="option-select" value="Johan Leal">
+                        Johan Leal
                       </option>
-                      <option className="option-select" value="Perito 2">
-                        Perito 2
+                      <option className="option-select" value="Gabriel Avecina">
+                        Gabriel Avecina
                       </option>
-                      <option className="option-select" value="Perito 3">
-                        Perito 3
-                      </option>
+                      
                     </select>
                   </div>
                 }
