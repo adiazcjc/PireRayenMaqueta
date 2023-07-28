@@ -28,10 +28,6 @@ import { Modal } from "bootstrap";
 import lapiz from "../images/lapiz.png";
 export default function Home() {
   const dispatch = useDispatch();
-  // useEffect(() => {
-  //   dispatch(getCars());
-  //   dispatch(getClean());
-  // }, [dispatch]);
 
   useEffect(() => {
     dispatch(getCars());
@@ -39,17 +35,19 @@ export default function Home() {
 
     setTimeout(() => {
       generarPDF();
-    }, 0); // Llamar a la función generarPDF después de despachar las acciones
+    }, 0); 
   }, [dispatch]);
-  //probar
+
+
   const allCars = useSelector((state) => state.cars);
   const allModels = useSelector((state) => state.models);
   const allVersions = useSelector((state) => state.versions);
 
   const [input, setInput] = useState({
-    anio: 2000,
+    name: "",
   });
-
+  const [fecha, setFecha] = useState("");
+  const [inputNameFecha, setInputNameFecha] = useState("");
   const [mostrarOtroSelect, setMostrarOtroSelect] = useState(false);
 
   const [disableSelects, setDisableSelects] = useState(false);
@@ -70,6 +68,8 @@ export default function Home() {
   const [inputValueDominio, setInputValueDominio] = useState("");
   const [inputTasado, setInputTasado] = useState("");
   const [formData, setFormData] = useState(null);
+
+
   const [frontalImage, setFrontalImage] = useState(null);
   const [detrasImage, setDetrasImage] = useState(null);
   const [izquierdoImage, setIzquierdoImage] = useState(null);
@@ -83,10 +83,17 @@ export default function Home() {
 
   function handleChange(e) {
     setInput({
-      ...input,
-      [e.target.anio]: e.target.value,
-    });
-  }
+        ...input,
+        [e.target.name]: e.target.value
+    })
+}
+
+const handleChangeData = (e) => {
+  const selectedDate = new Date(e.target.value);
+  const formattedDate = selectedDate.toLocaleDateString("es-ES");
+  setFecha(formattedDate);
+  setInputNameFecha(e.target.name);
+};
 
   function handleFilterModel(e) {
     e.preventDefault();
@@ -392,6 +399,7 @@ export default function Home() {
           <View style={styles.separatorOne} />
         </Page>
       </Document>
+    
     );
 
     const getFormData1 = () => {
@@ -524,7 +532,10 @@ export default function Home() {
         formData8={formData8}
         formData9={formData9}
       />
+      
+   
     );
+    
   };
 
   return (
@@ -550,8 +561,9 @@ export default function Home() {
                       autoComplete="off"
                       required
                       onKeyDown={handleKeyDown}
+                      onChange={(e) => handleChange(e)}
                     />
-                    <label for="name" className="label-name">
+                    <label htmlFor="name" className="label-name">
                       <span className="content-name">Nombre del cliente</span>
                     </label>
                   </div>
@@ -570,8 +582,9 @@ export default function Home() {
                           maxLength={25}
                           required
                           onKeyPress={handleKeyPress}
+                          onChange={(e) => handleChange(e)}
                         />
-                        <label for="tel" className="label-name">
+                        <label htmlFor="tel" className="label-name">
                           <span className="content-name">Teléfono</span>
                         </label>
                       </div>
@@ -586,9 +599,10 @@ export default function Home() {
                           placeholder=" "
                           id="email"
                           autoComplete="off"
+                          onChange={(e) => handleChange(e)}
                           required
                         />
-                        <label for="email" className="label-name">
+                        <label htmlFor="email" className="label-name">
                           <span className="content-name">Email</span>
                         </label>
                       </div>
@@ -648,7 +662,7 @@ export default function Home() {
                             autoComplete="off"
                             required
                           />
-                          <label for="otro" className="label-name">
+                          <label htmlFor="otro" className="label-name">
                             <span className="content-name">
                               Ingrese otra marca / modelo
                             </span>
@@ -951,7 +965,7 @@ export default function Home() {
                             className="input-tof"
                             value="3P"
                           />
-                          <label for="1-caja" className="labeltof">
+                          <label htmlFor="1-caja" className="labeltof">
                             3P
                           </label>
                           <input
@@ -961,7 +975,7 @@ export default function Home() {
                             className="input-tof"
                             value="4P"
                           />
-                          <label for="2-caja" className="labeltof">
+                          <label htmlFor="2-caja" className="labeltof">
                             4P
                           </label>
                           <input
@@ -971,7 +985,7 @@ export default function Home() {
                             className="input-tof"
                             value="5P"
                           />
-                          <label for="3-caja" className="labeltof">
+                          <label htmlFor="3-caja" className="labeltof">
                             5P
                           </label>
                         </div>
@@ -987,7 +1001,7 @@ export default function Home() {
                             className="input-tof"
                             value="Automática"
                           />
-                          <label for="4-caja" className="labeltof">
+                          <label htmlFor="4-caja" className="labeltof">
                             A
                           </label>
                           <input
@@ -997,7 +1011,7 @@ export default function Home() {
                             className="input-tof"
                             value="Manual"
                           />
-                          <label for="5-caja" className="labeltof">
+                          <label htmlFor="5-caja" className="labeltof">
                             M
                           </label>
                         </div>
@@ -1087,7 +1101,7 @@ export default function Home() {
                             onChange={handleInputChangeDominio}
                             required
                           />
-                          <label for="patente" className="label-name">
+                          <label htmlFor="patente" className="label-name">
                             <span className="content-name">Dominio</span>
                           </label>
                         </div>
@@ -1106,8 +1120,9 @@ export default function Home() {
                             maxLength={7}
                             required
                             onKeyPress={handleKeyPress}
+                            onChange={(e) => handleChange(e)}
                           />
-                          <label for="km" className="label-name">
+                          <label htmlFor="km" className="label-name">
                             <span className="content-name">Kilometraje</span>
                           </label>
                         </div>
@@ -1118,73 +1133,9 @@ export default function Home() {
               </form>
               <form id="myForm3">
                 <div>
-                  {/* HASTA ACA */}
-                  {/* <div className="form mt-2">
-                    <div className="form-group">
-                      <input
-                        type="text"
-                        name="N° de Chasis"
-                        placeholder=" "
-                        id="chasis"
-                        autoComplete="off"
-                        pattern="[0-9]*"
-                        maxLength={25}
-                        required
-                        onKeyPress={handleKeyPress}
-                      />
-                      <label for="chasis" className="label-name">
-                        <span className="content-name">N° Chasis</span>
-                      </label>
-                    </div>
-                  </div> */}
-                  {/* <div className="form mt-2">
-                    <div className="form-group">
-                      <input
-                        type="text"
-                        name="N° de Motor"
-                        placeholder=" "
-                        id="motor"
-                        autoComplete="off"
-                        pattern="[0-9]*"
-                        maxLength={25}
-                        required
-                        onKeyPress={handleKeyPress}
-                      />
-                      <label for="patente" className="label-name">
-                        <span className="content-name">N° Motor</span>
-                      </label>
-                    </div>
-                  </div> */}
+                 
                   <div className="row mt-3">
-                    {/* <div className="col mt-1">
-                      Está alineado?
-                      <div className="col">
-                        <div className="tof-one" dir="rtl">
-                          <div className="radio-group">
-                            <input
-                              type="radio"
-                              name="Está alineado?"
-                              id="1-box"
-                              className="input-tof"
-                              value="No"
-                            />
-                            <label for="1-box" className="labeltof">
-                              NO
-                            </label>
-                            <input
-                              type="radio"
-                              name="Está alineado?"
-                              id="2-box"
-                              className="input-tof"
-                              value="Si"
-                            />
-                            <label for="2-box" className="labeltof">
-                              SI
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div> */}
+                   
                     <div className="col mt-1">
                       Está en garantía?
                       <div className="col">
@@ -1198,7 +1149,7 @@ export default function Home() {
                               value="No"
                               onChange={handleRadioChange}
                             />
-                            <label for="5-box" className="labeltof">
+                            <label htmlFor="5-box" className="labeltof">
                               NO
                             </label>
                             <input
@@ -1209,7 +1160,7 @@ export default function Home() {
                               value="Si"
                               onChange={handleRadioChange}
                             />
-                            <label for="6-box" className="labeltof">
+                            <label htmlFor="6-box" className="labeltof">
                               SI
                             </label>
                           </div>
@@ -1228,7 +1179,7 @@ export default function Home() {
                               className="input-tof"
                               value="No"
                             />
-                            <label for="3-box" className="labeltof">
+                            <label htmlFor="3-box" className="labeltof">
                               NO
                             </label>
                             <input
@@ -1238,7 +1189,7 @@ export default function Home() {
                               className="input-tof"
                               value="Si"
                             />
-                            <label for="4-box" className="labeltof">
+                            <label htmlFor="4-box" className="labeltof">
                               SI
                             </label>
                           </div>
@@ -1259,7 +1210,7 @@ export default function Home() {
                               value="No"
                               className="input-tof"
                             />
-                            <label for="7-box" className="labeltof">
+                            <label htmlFor="7-box" className="labeltof">
                               NO
                             </label>
                             <input
@@ -1269,7 +1220,7 @@ export default function Home() {
                               value="Si"
                               className="input-tof"
                             />
-                            <label for="8-box" className="labeltof">
+                            <label htmlFor="8-box" className="labeltof">
                               SI
                             </label>
                           </div>
@@ -1288,7 +1239,7 @@ export default function Home() {
                               value="No"
                               className="input-tof"
                             />
-                            <label for="9-box" className="labeltof">
+                            <label htmlFor="9-box" className="labeltof">
                               NO
                             </label>
                             <input
@@ -1298,7 +1249,7 @@ export default function Home() {
                               value="Si"
                               className="input-tof"
                             />
-                            <label for="10-box" className="labeltof">
+                            <label htmlFor="10-box" className="labeltof">
                               SI
                             </label>
                           </div>
@@ -1319,7 +1270,7 @@ export default function Home() {
                               value="No"
                               className="input-tof"
                             />
-                            <label for="11-box" className="labeltof">
+                            <label htmlFor="11-box" className="labeltof">
                               NO
                             </label>
                             <input
@@ -1329,7 +1280,7 @@ export default function Home() {
                               value="Si"
                               className="input-tof"
                             />
-                            <label for="12-box" className="labeltof">
+                            <label htmlFor="12-box" className="labeltof">
                               SI
                             </label>
                           </div>
@@ -1350,6 +1301,7 @@ export default function Home() {
                         id="date"
                         name="Vencimiento de garantía"
                         className="form-control"
+                        onChange={(e) => handleChangeData(e)}
                         disabled={desactivarInput}
                       />
                     </div>
@@ -1365,8 +1317,9 @@ export default function Home() {
                           height: "100px",
                           backgroundColor: "transparent",
                         }}
+                        onChange={(e) => handleChange(e)}
                       ></textarea>
-                      <label for="floatingTextarea2">Observaciones</label>
+                      <label htmlFor="floatingTextarea2">Observaciones</label>
                     </div>
                   </div>
                 </div>
@@ -1391,7 +1344,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         ABS
                       </label>
                     </div>
@@ -1407,7 +1360,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Airbag
                         </label>
                       </div>
@@ -1426,7 +1379,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Alarma en la llave
                         </label>
                       </div>
@@ -1443,7 +1396,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           AC Convenc.
                         </label>
                       </div>
@@ -1461,7 +1414,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Alarma en llavero
                       </label>
                     </div>
@@ -1478,7 +1431,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Climatizador
                         </label>
                       </div>
@@ -1496,7 +1449,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Dirección
                       </label>
                     </div>
@@ -1512,7 +1465,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Blindado
                         </label>
                       </div>
@@ -1530,26 +1483,12 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Techo solar
                       </label>
                     </div>
                   </div>
-                  {/* <div className="col">
-                    <div className="form-check m-1">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        name="CD Player"
-                        value="Si contiene"
-                        id="defaultCheck1"
-                        style={{ backgroundColor: "#087E8B" }}
-                      />
-                      <label className="form-check-label" for="defaultCheck1">
-                        CD Player
-                      </label>
-                    </div>
-                  </div> */}
+                 
                   <div className="col">
                     <div className="col">
                       <div className="form-check m-1">
@@ -1561,7 +1500,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Multimedia
                         </label>
                       </div>
@@ -1580,7 +1519,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Butacas de cuero
                         </label>
                       </div>
@@ -1598,7 +1537,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Comp. de abordo
                         </label>
                       </div>
@@ -1616,7 +1555,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Limpiador trasero
                       </label>
                     </div>
@@ -1632,33 +1571,14 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Desemp. trasero
                         </label>
                       </div>
                     </div>
                   </div>
                 </div>
-                {/* <div className="row mt-2">
-             
-                  <div className="col">
-                    <div className="col">
-                      <div className="form-check m-1">
-                        <input
-                          className="form-check-input"
-                          type="checkbox"
-                          value="Si contiene"
-                          name="Techo solar"
-                          id="defaultCheck1"
-                          style={{ backgroundColor: "#087E8B" }}
-                        />
-                        <label className="form-check-label" for="defaultCheck1">
-                          Techo solar
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
+               
                 <div className="row mt-2">
                   <div className="col">
                     <div className="col">
@@ -1671,7 +1591,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Ruedas de aleación
                         </label>
                       </div>
@@ -1689,7 +1609,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Trabas eléctricas
                         </label>
                       </div>
@@ -1707,7 +1627,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Vidrios eléctricos 2P
                       </label>
                     </div>
@@ -1723,7 +1643,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Vidrios eléctricos 4P
                         </label>
                       </div>
@@ -1741,7 +1661,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Ctrl de tracción
                       </label>
                     </div>
@@ -1757,7 +1677,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Tracción 4x4
                         </label>
                       </div>
@@ -1776,7 +1696,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Ctrl de estabilidad
                         </label>
                       </div>
@@ -1794,7 +1714,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Triángulo
                         </label>
                       </div>
@@ -1812,7 +1732,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Cricket
                       </label>
                     </div>
@@ -1828,7 +1748,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Llave de rueda
                         </label>
                       </div>
@@ -1846,7 +1766,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Cámara de estac.
                       </label>
                     </div>
@@ -1862,7 +1782,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Espejos eléctricos
                         </label>
                       </div>
@@ -1881,7 +1801,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Sensor de estac.
                         </label>
                       </div>
@@ -1899,7 +1819,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Capota marítima
                         </label>
                       </div>
@@ -1917,7 +1837,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Barras antivuelco
                       </label>
                     </div>
@@ -1933,7 +1853,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Faroles auxiliares
                         </label>
                       </div>
@@ -1951,7 +1871,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Sensor de lluvia
                       </label>
                     </div>
@@ -1967,7 +1887,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Sensor de faroles
                         </label>
                       </div>
@@ -1986,7 +1906,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Cruise control
                         </label>
                       </div>
@@ -2003,7 +1923,7 @@ export default function Home() {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" for="defaultCheck1">
+                        <label className="form-check-label" htmlFor="defaultCheck1">
                           Butacas con reg elec
                         </label>
                       </div>
@@ -2021,7 +1941,7 @@ export default function Home() {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" for="defaultCheck1">
+                      <label className="form-check-label" htmlFor="defaultCheck1">
                         Entrada USB/SD CARD/AUX/BT
                       </label>
                     </div>
@@ -2066,7 +1986,7 @@ export default function Home() {
                             id="1-stars"
                             value="Bueno"
                           />
-                          <label for="1-stars" className="star">
+                          <label htmlFor="1-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2075,7 +1995,7 @@ export default function Home() {
                             id="2-stars"
                             value="Regular"
                           />
-                          <label for="2-stars" className="star">
+                          <label htmlFor="2-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2084,7 +2004,7 @@ export default function Home() {
                             id="3-stars"
                             value="Malo"
                           />
-                          <label for="3-stars" className="star">
+                          <label htmlFor="3-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2118,38 +2038,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-di"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Neumático D.I."
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -2177,7 +2097,7 @@ export default function Home() {
                             id="4-stars"
                             value="Bueno"
                           />
-                          <label for="4-stars" className="star">
+                          <label htmlFor="4-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2186,7 +2106,7 @@ export default function Home() {
                             id="5-stars"
                             value="Regular"
                           />
-                          <label for="5-stars" className="star">
+                          <label htmlFor="5-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2195,7 +2115,7 @@ export default function Home() {
                             id="6-stars"
                             value="Malo"
                           />
-                          <label for="6-stars" className="star">
+                          <label htmlFor="6-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2229,38 +2149,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-dd"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Neumático D.D."
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -2288,7 +2208,7 @@ export default function Home() {
                             id="7-stars"
                             value="Bueno"
                           />
-                          <label for="7-stars" className="star">
+                          <label htmlFor="7-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2297,7 +2217,7 @@ export default function Home() {
                             id="8-stars"
                             value="Regular"
                           />
-                          <label for="8-stars" className="star">
+                          <label htmlFor="8-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2306,7 +2226,7 @@ export default function Home() {
                             id="9-stars"
                             value="Malo"
                           />
-                          <label for="9-stars" className="star">
+                          <label htmlFor="9-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2340,38 +2260,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-ti"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Neumático T.I."
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -2399,7 +2319,7 @@ export default function Home() {
                             id="10-stars"
                             value="Bueno"
                           />
-                          <label for="10-stars" className="star">
+                          <label htmlFor="10-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2408,7 +2328,7 @@ export default function Home() {
                             id="11-stars"
                             value="Regular"
                           />
-                          <label for="11-stars" className="star">
+                          <label htmlFor="11-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2417,7 +2337,7 @@ export default function Home() {
                             id="12-stars"
                             value="Malo"
                           />
-                          <label for="12-stars" className="star">
+                          <label htmlFor="12-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2451,38 +2371,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-td"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Neumático T.D."
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -2510,7 +2430,7 @@ export default function Home() {
                             id="13-stars"
                             value="Bueno"
                           />
-                          <label for="13-stars" className="star">
+                          <label htmlFor="13-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2519,7 +2439,7 @@ export default function Home() {
                             id="14-stars"
                             value="Regular"
                           />
-                          <label for="14-stars" className="star">
+                          <label htmlFor="14-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2528,7 +2448,7 @@ export default function Home() {
                             id="15-stars"
                             value="Malo"
                           />
-                          <label for="15-stars" className="star">
+                          <label htmlFor="15-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2562,38 +2482,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-nr"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Neumático Repuesto"
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -2621,7 +2541,7 @@ export default function Home() {
                             id="22-stars"
                             value="Bueno"
                           />
-                          <label for="22-stars" className="star">
+                          <label htmlFor="22-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2630,7 +2550,7 @@ export default function Home() {
                             id="23-stars"
                             value="Regular"
                           />
-                          <label for="23-stars" className="star">
+                          <label htmlFor="23-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2639,7 +2559,7 @@ export default function Home() {
                             id="24-stars"
                             value="Malo"
                           />
-                          <label for="24-stars" className="star">
+                          <label htmlFor="24-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2660,7 +2580,7 @@ export default function Home() {
                             id="25-stars"
                             value="Bueno"
                           />
-                          <label for="25-stars" className="star">
+                          <label htmlFor="25-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2669,7 +2589,7 @@ export default function Home() {
                             id="26-stars"
                             value="Regular"
                           />
-                          <label for="26-stars" className="star">
+                          <label htmlFor="26-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2678,7 +2598,7 @@ export default function Home() {
                             id="27-stars"
                             value="Malo"
                           />
-                          <label for="27-stars" className="star">
+                          <label htmlFor="27-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2699,7 +2619,7 @@ export default function Home() {
                             id="28-stars"
                             value="Bueno"
                           />
-                          <label for="28-stars" className="star">
+                          <label htmlFor="28-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2708,7 +2628,7 @@ export default function Home() {
                             id="29-stars"
                             value="Regular"
                           />
-                          <label for="29-stars" className="star">
+                          <label htmlFor="29-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2717,7 +2637,7 @@ export default function Home() {
                             id="30-stars"
                             value="Malo"
                           />
-                          <label for="30-stars" className="star">
+                          <label htmlFor="30-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2738,7 +2658,7 @@ export default function Home() {
                             id="31-stars"
                             value="Bueno"
                           />
-                          <label for="31-stars" className="star">
+                          <label htmlFor="31-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2747,7 +2667,7 @@ export default function Home() {
                             id="32-stars"
                             value="Regular"
                           />
-                          <label for="32-stars" className="star">
+                          <label htmlFor="32-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2756,7 +2676,7 @@ export default function Home() {
                             id="33-stars"
                             value="Malo"
                           />
-                          <label for="33-stars" className="star">
+                          <label htmlFor="33-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2790,38 +2710,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-mg"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Motor Gral"
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -2849,7 +2769,7 @@ export default function Home() {
                             id="34-stars"
                             value="Bueno"
                           />
-                          <label for="34-stars" className="star">
+                          <label htmlFor="34-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2858,7 +2778,7 @@ export default function Home() {
                             id="35-stars"
                             value="Regular"
                           />
-                          <label for="35-stars" className="star">
+                          <label htmlFor="35-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2867,7 +2787,7 @@ export default function Home() {
                             id="36-stars"
                             value="Malo"
                           />
-                          <label for="36-stars" className="star">
+                          <label htmlFor="36-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2901,38 +2821,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-ae"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Acción Embrague"
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -2960,7 +2880,7 @@ export default function Home() {
                             id="37-stars"
                             value="Bueno"
                           />
-                          <label for="37-stars" className="star">
+                          <label htmlFor="37-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2969,7 +2889,7 @@ export default function Home() {
                             id="38-stars"
                             value="Regular"
                           />
-                          <label for="38-stars" className="star">
+                          <label htmlFor="38-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -2978,7 +2898,7 @@ export default function Home() {
                             id="39-stars"
                             value="Malo"
                           />
-                          <label for="39-stars" className="star">
+                          <label htmlFor="39-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -2999,7 +2919,7 @@ export default function Home() {
                             id="40-stars"
                             value="Bueno"
                           />
-                          <label for="40-stars" className="star">
+                          <label htmlFor="40-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3008,7 +2928,7 @@ export default function Home() {
                             id="41-stars"
                             value="Regular"
                           />
-                          <label for="41-stars" className="star">
+                          <label htmlFor="41-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3017,7 +2937,7 @@ export default function Home() {
                             id="42-stars"
                             value="Malo"
                           />
-                          <label for="42-stars" className="star">
+                          <label htmlFor="42-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3039,7 +2959,7 @@ export default function Home() {
                             className="input-tof"
                             value="No"
                           />
-                          <label for="43-stars" className="labeltof">
+                          <label htmlFor="43-stars" className="labeltof">
                             NO
                           </label>
 
@@ -3050,27 +2970,12 @@ export default function Home() {
                             className="input-tof"
                             value="Si"
                           />
-                          <label for="45-stars" className="labeltof">
+                          <label htmlFor="45-stars" className="labeltof">
                             SI
                           </label>
                         </div>
                       </div>
-                      {/* <div className="star-rating" dir="rtl">
-                    <div className="radio-group">
-                      <input type="radio" name="Fuga de frenos" id="43-stars" />
-                      <label for="43-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="Fuga de frenos" id="44-stars" />
-                      <label for="44-stars" className="star">
-                        &#9733;
-                      </label>
-                      <input type="radio" name="Fuga de frenos" id="45-stars" />
-                      <label for="45-stars" className="star">
-                        &#9733;
-                      </label>
-                    </div>
-                  </div> */}
+                     
                     </div>
                     <div className="col mt-2"></div>
                   </div>
@@ -3087,7 +2992,7 @@ export default function Home() {
                             id="46-stars"
                             value="Bueno"
                           />
-                          <label for="46-stars" className="star">
+                          <label htmlFor="46-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3096,7 +3001,7 @@ export default function Home() {
                             id="47-stars"
                             value="Regular"
                           />
-                          <label for="47-stars" className="star">
+                          <label htmlFor="47-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3105,7 +3010,7 @@ export default function Home() {
                             id="48-stars"
                             value="Malo"
                           />
-                          <label for="48-stars" className="star">
+                          <label htmlFor="48-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3139,38 +3044,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-amort"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Amortiguadores"
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -3198,7 +3103,7 @@ export default function Home() {
                             id="49-stars"
                             value="Bueno"
                           />
-                          <label for="49-stars" className="star">
+                          <label htmlFor="49-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3207,7 +3112,7 @@ export default function Home() {
                             id="50-stars"
                             value="Regular"
                           />
-                          <label for="50-stars" className="star">
+                          <label htmlFor="50-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3216,7 +3121,7 @@ export default function Home() {
                             id="51-stars"
                             value="Malo"
                           />
-                          <label for="51-stars" className="star">
+                          <label htmlFor="51-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3238,7 +3143,7 @@ export default function Home() {
                             className="input-tof"
                             value="No"
                           />
-                          <label for="52-stars" className="labeltof">
+                          <label htmlFor="52-stars" className="labeltof">
                             NO
                           </label>
 
@@ -3249,7 +3154,7 @@ export default function Home() {
                             className="input-tof"
                             value="Si"
                           />
-                          <label for="54-stars" className="labeltof">
+                          <label htmlFor="54-stars" className="labeltof">
                             SI
                           </label>
                         </div>
@@ -3270,7 +3175,7 @@ export default function Home() {
                             id="55-stars"
                             value="Bueno"
                           />
-                          <label for="55-stars" className="star">
+                          <label htmlFor="55-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3279,7 +3184,7 @@ export default function Home() {
                             id="56-stars"
                             value="Regular"
                           />
-                          <label for="56-stars" className="star">
+                          <label htmlFor="56-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3288,7 +3193,7 @@ export default function Home() {
                             id="57-stars"
                             value="Malo"
                           />
-                          <label for="57-stars" className="star">
+                          <label htmlFor="57-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3322,38 +3227,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-cd"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Correa dentada"
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -3381,7 +3286,7 @@ export default function Home() {
                             id="58-stars"
                             value="Bueno"
                           />
-                          <label for="58-stars" className="star">
+                          <label htmlFor="58-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3390,7 +3295,7 @@ export default function Home() {
                             id="59-stars"
                             value="Regular"
                           />
-                          <label for="59-stars" className="star">
+                          <label htmlFor="59-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3399,7 +3304,7 @@ export default function Home() {
                             id="60-stars"
                             value="Malo"
                           />
-                          <label for="60-stars" className="star">
+                          <label htmlFor="60-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3420,7 +3325,7 @@ export default function Home() {
                             id="61-stars"
                             value="Bueno"
                           />
-                          <label for="61-stars" className="star">
+                          <label htmlFor="61-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3429,7 +3334,7 @@ export default function Home() {
                             id="62-stars"
                             value="Regular"
                           />
-                          <label for="62-stars" className="star">
+                          <label htmlFor="62-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3438,7 +3343,7 @@ export default function Home() {
                             id="63-stars"
                             value="Malo"
                           />
-                          <label for="63-stars" className="star">
+                          <label htmlFor="63-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3472,38 +3377,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-ave"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Acción vidrios eléctricos"
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -3531,7 +3436,7 @@ export default function Home() {
                             id="64-stars"
                             value="Bueno"
                           />
-                          <label for="64-stars" className="star">
+                          <label htmlFor="64-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3540,7 +3445,7 @@ export default function Home() {
                             id="65-stars"
                             value="Bueno"
                           />
-                          <label for="65-stars" className="star">
+                          <label htmlFor="65-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3549,7 +3454,7 @@ export default function Home() {
                             id="66-stars"
                             value="Malo"
                           />
-                          <label for="66-stars" className="star">
+                          <label htmlFor="66-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3570,7 +3475,7 @@ export default function Home() {
                             id="67-stars"
                             value="Bueno"
                           />
-                          <label for="67-stars" className="star">
+                          <label htmlFor="67-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3579,7 +3484,7 @@ export default function Home() {
                             id="68-stars"
                             value="Regular"
                           />
-                          <label for="68-stars" className="star">
+                          <label htmlFor="68-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3588,7 +3493,7 @@ export default function Home() {
                             id="69-stars"
                             value="Malo"
                           />
-                          <label for="69-stars" className="star">
+                          <label htmlFor="69-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3622,38 +3527,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-eb"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Estado de butacas"
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -3681,7 +3586,7 @@ export default function Home() {
                             id="70-stars"
                             value="Bueno"
                           />
-                          <label for="70-stars" className="star">
+                          <label htmlFor="70-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3690,7 +3595,7 @@ export default function Home() {
                             id="71-stars"
                             value="Regular"
                           />
-                          <label for="71-stars" className="star">
+                          <label htmlFor="71-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3699,7 +3604,7 @@ export default function Home() {
                             id="72-stars"
                             value="Malo"
                           />
-                          <label for="72-stars" className="star">
+                          <label htmlFor="72-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3720,7 +3625,7 @@ export default function Home() {
                             id="73-stars"
                             value="Bueno"
                           />
-                          <label for="73-stars" className="star">
+                          <label htmlFor="73-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3729,7 +3634,7 @@ export default function Home() {
                             id="74-stars"
                             value="Regular"
                           />
-                          <label for="74-stars" className="star">
+                          <label htmlFor="74-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3738,7 +3643,7 @@ export default function Home() {
                             id="75-stars"
                             value="Malo"
                           />
-                          <label for="75-stars" className="star">
+                          <label htmlFor="75-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3759,7 +3664,7 @@ export default function Home() {
                             id="76-stars"
                             value="Bueno"
                           />
-                          <label for="76-stars" className="star">
+                          <label htmlFor="76-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3768,7 +3673,7 @@ export default function Home() {
                             id="77-stars"
                             value="Regular"
                           />
-                          <label for="77-stars" className="star">
+                          <label htmlFor="77-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3777,7 +3682,7 @@ export default function Home() {
                             id="78-stars"
                             value="Malo"
                           />
-                          <label for="78-stars" className="star">
+                          <label htmlFor="78-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3798,7 +3703,7 @@ export default function Home() {
                             id="79-stars"
                             value="Bueno"
                           />
-                          <label for="79-stars" className="star">
+                          <label htmlFor="79-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3807,7 +3712,7 @@ export default function Home() {
                             id="80-stars"
                             value="Regular"
                           />
-                          <label for="80-stars" className="star">
+                          <label htmlFor="80-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3816,7 +3721,7 @@ export default function Home() {
                             id="81-stars"
                             value="Malo"
                           />
-                          <label for="81-stars" className="star">
+                          <label htmlFor="81-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3837,7 +3742,7 @@ export default function Home() {
                             id="82-stars"
                             value="Bueno"
                           />
-                          <label for="82-stars" className="star">
+                          <label htmlFor="82-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3846,7 +3751,7 @@ export default function Home() {
                             id="83-stars"
                             value="Regular"
                           />
-                          <label for="83-stars" className="star">
+                          <label htmlFor="83-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3855,7 +3760,7 @@ export default function Home() {
                             id="84-stars"
                             value="Malo"
                           />
-                          <label for="84-stars" className="star">
+                          <label htmlFor="84-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3876,7 +3781,7 @@ export default function Home() {
                             id="85-stars"
                             value="Bueno"
                           />
-                          <label for="85-stars" className="star">
+                          <label htmlFor="85-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3885,7 +3790,7 @@ export default function Home() {
                             id="86-stars"
                             value="Regular"
                           />
-                          <label for="86-stars" className="star">
+                          <label htmlFor="86-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -3894,7 +3799,7 @@ export default function Home() {
                             id="87-stars"
                             value="Malo"
                           />
-                          <label for="87-stars" className="star">
+                          <label htmlFor="87-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -3916,7 +3821,7 @@ export default function Home() {
                             value="No"
                             className="input-tof"
                           />
-                          <label for="88-stars" className="labeltof">
+                          <label htmlFor="88-stars" className="labeltof">
                             NO
                           </label>
 
@@ -3927,7 +3832,7 @@ export default function Home() {
                             value="Si"
                             className="input-tof"
                           />
-                          <label for="90-stars" className="labeltof">
+                          <label htmlFor="90-stars" className="labeltof">
                             SI
                           </label>
                         </div>
@@ -3949,7 +3854,7 @@ export default function Home() {
                             value="No"
                             className="input-tof"
                           />
-                          <label for="91-stars" className="labeltof">
+                          <label htmlFor="91-stars" className="labeltof">
                             NO
                           </label>
 
@@ -3960,7 +3865,7 @@ export default function Home() {
                             value="Si"
                             className="input-tof"
                           />
-                          <label for="93-stars" className="labeltof">
+                          <label htmlFor="93-stars" className="labeltof">
                             SI
                           </label>
                         </div>
@@ -3982,7 +3887,7 @@ export default function Home() {
                             value="No"
                             className="input-tof"
                           />
-                          <label for="94-stars" className="labeltof">
+                          <label htmlFor="94-stars" className="labeltof">
                             NO
                           </label>
 
@@ -3993,7 +3898,7 @@ export default function Home() {
                             value="Si"
                             className="input-tof"
                           />
-                          <label for="96-stars" className="labeltof">
+                          <label htmlFor="96-stars" className="labeltof">
                             SI
                           </label>
                         </div>
@@ -4014,7 +3919,7 @@ export default function Home() {
                             id="97-stars"
                             value="Bueno"
                           />
-                          <label for="97-stars" className="star">
+                          <label htmlFor="97-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -4023,7 +3928,7 @@ export default function Home() {
                             id="98-stars"
                             value="Regular"
                           />
-                          <label for="98-stars" className="star">
+                          <label htmlFor="98-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -4032,7 +3937,7 @@ export default function Home() {
                             id="99-stars"
                             value="Malo"
                           />
-                          <label for="99-stars" className="star">
+                          <label htmlFor="99-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -4054,7 +3959,7 @@ export default function Home() {
                             value="No"
                             className="input-tof"
                           />
-                          <label for="100-stars" className="labeltof">
+                          <label htmlFor="100-stars" className="labeltof">
                             NO
                           </label>
 
@@ -4065,7 +3970,7 @@ export default function Home() {
                             value="Si"
                             className="input-tof"
                           />
-                          <label for="102-stars" className="labeltof">
+                          <label htmlFor="102-stars" className="labeltof">
                             SI
                           </label>
                         </div>
@@ -4086,7 +3991,7 @@ export default function Home() {
                             id="103-stars"
                             value="Bueno"
                           />
-                          <label for="103-stars" className="star">
+                          <label htmlFor="103-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -4095,7 +4000,7 @@ export default function Home() {
                             id="104-stars"
                             value="Regular"
                           />
-                          <label for="104-stars" className="star">
+                          <label htmlFor="104-stars" className="star">
                             &#9733;
                           </label>
                           <input
@@ -4104,7 +4009,7 @@ export default function Home() {
                             id="105-stars"
                             value="Malo"
                           />
-                          <label for="105-stars" className="star">
+                          <label htmlFor="105-stars" className="star">
                             &#9733;
                           </label>
                         </div>
@@ -4138,38 +4043,38 @@ export default function Home() {
                         />
                       </button>
                       <div
-                        class="modal fade"
+                        className="modal fade"
                         id="exampleModal-ep"
-                        tabindex="-1"
+                        tabIndex="-1"
                         aria-labelledby="exampleModalLabel"
                         aria-hidden="true"
                       >
-                        <div class="modal-dialog">
-                          <div class="modal-content">
-                            <div class="modal-header">
+                        <div className="modal-dialog">
+                          <div className="modal-content">
+                            <div className="modal-header">
                               <h4
-                                class="modal-title fs-5"
+                                className="modal-title fs-5"
                                 id="exampleModalLabel"
                               >
                                 Observaciones
                               </h4>
                               <button
                                 type="button"
-                                class="btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
-                            <div class="modal-body">
-                              <div class="mb-3">
+                            <div className="modal-body">
+                              <div className="mb-3">
                                 <textarea
-                                  class="form-control"
+                                  className="form-control"
                                   id="message-text"
                                   name="Observaciones Estado del panel"
                                 ></textarea>
                               </div>
                             </div>
-                            <div class="modal-footer">
+                            <div className="modal-footer">
                               <button
                                 type="button"
                                 style={{ backgroundColor: "#087E8B" }}
@@ -4201,18 +4106,18 @@ export default function Home() {
                 className="form-control"
                 type="file"
                 id="frontalImageFile"
-                //onChange={handleFrontalImageUpload}
+                
                 onChange={(event) =>
                   setFrontalImage(URL.createObjectURL(event.target.files[0]))
                 }
               />
             </div>
-            {/* {frontalImageURL && ( */}
+           
             {frontalImage && (
               <div>
                 <h6>Imagen frontal seleccionada:</h6>
                 <img
-                  //src={frontalImageURL}
+                
                   src={frontalImage}
                   alt="Imagen frontal seleccionada"
                   style={{ maxWidth: "300px", maxHeight: "300px" }}
@@ -4229,18 +4134,18 @@ export default function Home() {
                 className="form-control"
                 type="file"
                 id="detrasImageFile"
-                //onChange={handleDetrasImageUpload}
+               
                 onChange={(event) =>
                   setDetrasImage(URL.createObjectURL(event.target.files[0]))
                 }
               />
             </div>
-            {/* {detrasImageURL && ( */}
+    
             {detrasImage && (
               <div>
                 <h6>Imagen de detrás seleccionada:</h6>
                 <img
-                  //src={detrasImageURL}
+              
                   src={detrasImage}
                   alt="Imagen de detrás seleccionada"
                   style={{ maxWidth: "300px", maxHeight: "300px" }}
@@ -4257,18 +4162,18 @@ export default function Home() {
                 className="form-control"
                 type="file"
                 id="izquierdoImageFile"
-                //onChange={handleIzquierdoImageUpload}
+              
                 onChange={(event) =>
                   setIzquierdoImage(URL.createObjectURL(event.target.files[0]))
                 }
               />
             </div>
-            {/* {izquierdoImageURL && ( */}
+          
             {izquierdoImage && (
               <div>
                 <h6>Imagen frontal seleccionada:</h6>
                 <img
-                  //src={izquierdoImageURL}
+             
                   src={izquierdoImage}
                   alt="Imagen frontal seleccionada"
                   style={{ maxWidth: "300px", maxHeight: "300px" }}
@@ -4284,7 +4189,7 @@ export default function Home() {
                 className="form-control"
                 type="file"
                 id="derechoImageFile"
-                //onChange={handleDerechoImageUpload}
+                
                 onChange={(event) =>
                   setDerechoImage(URL.createObjectURL(event.target.files[0]))
                 }
@@ -4302,18 +4207,7 @@ export default function Home() {
                 />
               </div>
             )}
-            {/* <div className="mb-3">
-                <label for="formFile" className="form-label">
-                  Perfil izquierdo
-                </label>
-                <input className="form-control" type="file" id="formFile" />
-              </div>
-              <div className="mb-3">
-                <label for="formFile" className="form-label">
-                  Detras
-                </label>
-                <input className="form-control" type="file" id="formFile" />
-              </div> */}
+            
           </div>
         </div>
         <hr className="mt-1" />
@@ -4331,15 +4225,16 @@ export default function Home() {
                       height: "100px",
                       backgroundColor: "transparent",
                     }}
+                    onChange={(e) => handleChange(e)}
                   ></textarea>
-                  <label for="floatingTextarea3">
+                  <label htmlFor="floatingTextarea3">
                     Observaciones (rayaduras o aboyaduras)
                   </label>
                 </div>
               </div>
             </div>
             <div className="col-md" id="todoList">
-              {/* <TodoList /> */}
+             
             </div>
           </form>
           <hr className="mt-3" />
@@ -4399,9 +4294,10 @@ export default function Home() {
                     placeholder=" "
                     id="correo"
                     autoComplete="off"
+                    onChange={(e) => handleChange(e)}
                     required
                   />
-                  <label for="email" className="label-name">
+                  <label htmlFor="email" className="label-name">
                     <span className="content-name">
                       Correo del destinatario
                     </span>
@@ -4412,38 +4308,7 @@ export default function Home() {
             <hr className="mt-3" />
             <div className="row">
               <div className="col">
-                {/* <select
-                  id="myCustomSelect"
-                  className="form-control custom-select mt-1"
-                  aria-label="Default select example"
-                  name="Calificación General del Vehículo"
-                  style={{
-                    background: "transparent",
-                    border: "none",
-                    borderBottom: "1px solid #ccc",
-                    backgroundImage:
-                      "url('data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E')",
-                    backgroundPosition: "right center",
-                    backgroundRepeat: "no-repeat",
-                    appearance: "none",
-                    WebkitAppearance: "none",
-                    MozAppearance: "none",
-                    paddingRight: "20px",
-                  }}
-                >
-                  <option value="" hidden name="solicitado">
-                    Solicitado por
-                  </option>
-                  <option className="option-select" value="Convencional">
-                    Convencional
-                  </option>
-                  <option className="option-select" value="Planes de ahorro">
-                    Planes de ahorro
-                  </option>
-                  <option className="option-select" value="Usados">
-                    Usados
-                  </option>
-                </select> */}
+                
                 <div className="col mt-1">
                   {
                     <div>
@@ -4650,12 +4515,7 @@ export default function Home() {
           </form>
         </div>
       </div>
-      {/* <PDFDownloadLink document={generarPDF()} fileName="PireRayenTasacion.pdf">
-        {({ blob, url, loading, error }) =>
-        
-          loading ? "Generando PDF..." : "Descargar PDF"
-        }
-      </PDFDownloadLink> */}
+     
       <PDFDownloadLink document={generarPDF()} fileName="PireRayenTasacion.pdf">
         {({ blob, url, loading, error }) => (
           <button
@@ -4673,6 +4533,7 @@ export default function Home() {
               }).then((result) => {
                 if (result.isConfirmed) {
                   window.open(url, "_blank");
+                 window.location.reload()
                 }
               });
             }}
