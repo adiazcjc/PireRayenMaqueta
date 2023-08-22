@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
+import axios from "axios";
 import styles from "./Home.css";
 import NavBar from "./NavBar";
 import TodoList from "./List";
+import { saveAs } from 'file-saver'
 import { useDispatch, useSelector } from "react-redux";
 import { getCars, filterModel, filterVersion, getClean } from "../actions";
 import {
   PDFDownloadLink,
+  BlobProvider,
   Document,
   Page,
   Text,
@@ -26,6 +29,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Modal } from "bootstrap";
 import lapiz from "../images/lapiz.png";
+
+// import emailjs from "emailjs-com";
+
+// emailjs.init(EMAILJS_USER_ID);
+
 export default function Home() {
   const dispatch = useDispatch();
 
@@ -35,9 +43,8 @@ export default function Home() {
 
     setTimeout(() => {
       generarPDF();
-    }, 0); 
+    }, 0);
   }, [dispatch]);
-
 
   const allCars = useSelector((state) => state.cars);
   const allModels = useSelector((state) => state.models);
@@ -69,11 +76,19 @@ export default function Home() {
   const [inputTasado, setInputTasado] = useState("");
   const [formData, setFormData] = useState(null);
 
-
   const [frontalImage, setFrontalImage] = useState(null);
   const [detrasImage, setDetrasImage] = useState(null);
   const [izquierdoImage, setIzquierdoImage] = useState(null);
   const [derechoImage, setDerechoImage] = useState(null);
+
+  const [destinatario, setDestinatario] = useState("");
+  const [pdfBlob, setPdfBlob] = useState(null);
+  const [mensaje, setMensaje] = useState("");
+  const [html, setHtml] = useState("");
+  const [subject, setSubject] = useState("");
+  const [pdfLink, setPdfLink] = useState("");
+   const [loading, setLoading] = useState(false);
+ 
 
   if (allModels) {
     for (var i = 0; i < allModels.length; i++) {
@@ -81,19 +96,35 @@ export default function Home() {
     }
   }
 
+  //FUNCIONA PERO NO ADJUNTA EL PDF AUN
+  // const handleMail = async(e) =>{
+  //   e.preventDefault();
+  //   try {
+  //     const response = await axios.post("http://localhost:3001/email", {
+  //       destinatario,
+  //       mensaje: "Hola, esto es un mensaje de PireRayen",
+  //     });
+  //     console.log(response)
+  //     console.log(response.data)
+  //   }catch(error){
+  //     console.error("Error al enviar el correo", error)
+  //   }
+  // }
+
+  
   function handleChange(e) {
     setInput({
-        ...input,
-        [e.target.name]: e.target.value
-    })
-}
+      ...input,
+      [e.target.name]: e.target.value,
+    });
+  }
 
-const handleChangeData = (e) => {
-  const selectedDate = new Date(e.target.value);
-  const formattedDate = selectedDate.toLocaleDateString("es-ES");
-  setFecha(formattedDate);
-  setInputNameFecha(e.target.name);
-};
+  const handleChangeData = (e) => {
+    const selectedDate = new Date(e.target.value);
+    const formattedDate = selectedDate.toLocaleDateString("es-ES");
+    setFecha(formattedDate);
+    setInputNameFecha(e.target.name);
+  };
 
   function handleFilterModel(e) {
     e.preventDefault();
@@ -399,7 +430,6 @@ const handleChangeData = (e) => {
           <View style={styles.separatorOne} />
         </Page>
       </Document>
-    
     );
 
     const getFormData1 = () => {
@@ -532,12 +562,29 @@ const handleChangeData = (e) => {
         formData8={formData8}
         formData9={formData9}
       />
-      
-   
     );
-    
   };
 
+  const handleMail = async (url) => {
+    try {
+      const fullMessage = ``
+    ;
+      // const response = await axios.post("http://localhost:3001/email", {
+        const response = await axios.post("https://server-peritajes.onrender.com/email", {
+        url,
+        destinatario,
+        subject: "Formulario de Tasación - PireRayen",
+        mensaje: fullMessage,
+      });
+      console.log(response.data);
+      window.location.reload()
+    } catch (error) {
+      console.error("Error al enviar el correo", error);
+    }
+  };
+
+ 
+  
   return (
     <div className="containerHome">
       {/* <form id="myForm"> */}
@@ -1133,9 +1180,7 @@ const handleChangeData = (e) => {
               </form>
               <form id="myForm3">
                 <div>
-                 
                   <div className="row mt-3">
-                   
                     <div className="col mt-1">
                       Está en garantía?
                       <div className="col">
@@ -1344,7 +1389,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         ABS
                       </label>
                     </div>
@@ -1360,7 +1408,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Airbag
                         </label>
                       </div>
@@ -1379,7 +1430,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Alarma en la llave
                         </label>
                       </div>
@@ -1396,7 +1450,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           AC Convenc.
                         </label>
                       </div>
@@ -1414,7 +1471,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Alarma en llavero
                       </label>
                     </div>
@@ -1431,7 +1491,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Climatizador
                         </label>
                       </div>
@@ -1449,7 +1512,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Dirección
                       </label>
                     </div>
@@ -1465,7 +1531,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Blindado
                         </label>
                       </div>
@@ -1483,12 +1552,15 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Techo solar
                       </label>
                     </div>
                   </div>
-                 
+
                   <div className="col">
                     <div className="col">
                       <div className="form-check m-1">
@@ -1500,7 +1572,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Multimedia
                         </label>
                       </div>
@@ -1519,7 +1594,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Butacas de cuero
                         </label>
                       </div>
@@ -1537,7 +1615,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Comp. de abordo
                         </label>
                       </div>
@@ -1555,7 +1636,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Limpiador trasero
                       </label>
                     </div>
@@ -1571,14 +1655,16 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Desemp. trasero
                         </label>
                       </div>
                     </div>
                   </div>
                 </div>
-               
                 <div className="row mt-2">
                   <div className="col">
                     <div className="col">
@@ -1591,7 +1677,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Ruedas de aleación
                         </label>
                       </div>
@@ -1609,7 +1698,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Trabas eléctricas
                         </label>
                       </div>
@@ -1627,7 +1719,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Vidrios eléctricos 2P
                       </label>
                     </div>
@@ -1643,7 +1738,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Vidrios eléctricos 4P
                         </label>
                       </div>
@@ -1661,7 +1759,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Ctrl de tracción
                       </label>
                     </div>
@@ -1677,7 +1778,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Tracción 4x4
                         </label>
                       </div>
@@ -1696,7 +1800,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Ctrl de estabilidad
                         </label>
                       </div>
@@ -1714,7 +1821,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Triángulo
                         </label>
                       </div>
@@ -1732,7 +1842,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Cricket
                       </label>
                     </div>
@@ -1748,7 +1861,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Llave de rueda
                         </label>
                       </div>
@@ -1766,7 +1882,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Cámara de estac.
                       </label>
                     </div>
@@ -1782,7 +1901,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Espejos eléctricos
                         </label>
                       </div>
@@ -1801,7 +1923,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Sensor de estac.
                         </label>
                       </div>
@@ -1819,7 +1944,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Capota marítima
                         </label>
                       </div>
@@ -1837,7 +1965,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Barras antivuelco
                       </label>
                     </div>
@@ -1853,7 +1984,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Faroles auxiliares
                         </label>
                       </div>
@@ -1871,7 +2005,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Sensor de lluvia
                       </label>
                     </div>
@@ -1887,7 +2024,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Sensor de faroles
                         </label>
                       </div>
@@ -1906,7 +2046,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Cruise control
                         </label>
                       </div>
@@ -1923,7 +2066,10 @@ const handleChangeData = (e) => {
                           id="defaultCheck1"
                           style={{ backgroundColor: "#087E8B" }}
                         />
-                        <label className="form-check-label" htmlFor="defaultCheck1">
+                        <label
+                          className="form-check-label"
+                          htmlFor="defaultCheck1"
+                        >
                           Butacas con reg elec
                         </label>
                       </div>
@@ -1941,7 +2087,10 @@ const handleChangeData = (e) => {
                         id="defaultCheck1"
                         style={{ backgroundColor: "#087E8B" }}
                       />
-                      <label className="form-check-label" htmlFor="defaultCheck1">
+                      <label
+                        className="form-check-label"
+                        htmlFor="defaultCheck1"
+                      >
                         Entrada USB/SD CARD/AUX/BT
                       </label>
                     </div>
@@ -2975,7 +3124,6 @@ const handleChangeData = (e) => {
                           </label>
                         </div>
                       </div>
-                     
                     </div>
                     <div className="col mt-2"></div>
                   </div>
@@ -4106,18 +4254,16 @@ const handleChangeData = (e) => {
                 className="form-control"
                 type="file"
                 id="frontalImageFile"
-                
                 onChange={(event) =>
                   setFrontalImage(URL.createObjectURL(event.target.files[0]))
                 }
               />
             </div>
-           
+
             {frontalImage && (
               <div>
                 <h6>Imagen frontal seleccionada:</h6>
                 <img
-                
                   src={frontalImage}
                   alt="Imagen frontal seleccionada"
                   style={{ maxWidth: "300px", maxHeight: "300px" }}
@@ -4134,18 +4280,16 @@ const handleChangeData = (e) => {
                 className="form-control"
                 type="file"
                 id="detrasImageFile"
-               
                 onChange={(event) =>
                   setDetrasImage(URL.createObjectURL(event.target.files[0]))
                 }
               />
             </div>
-    
+
             {detrasImage && (
               <div>
                 <h6>Imagen de detrás seleccionada:</h6>
                 <img
-              
                   src={detrasImage}
                   alt="Imagen de detrás seleccionada"
                   style={{ maxWidth: "300px", maxHeight: "300px" }}
@@ -4162,18 +4306,16 @@ const handleChangeData = (e) => {
                 className="form-control"
                 type="file"
                 id="izquierdoImageFile"
-              
                 onChange={(event) =>
                   setIzquierdoImage(URL.createObjectURL(event.target.files[0]))
                 }
               />
             </div>
-          
+
             {izquierdoImage && (
               <div>
                 <h6>Imagen frontal seleccionada:</h6>
                 <img
-             
                   src={izquierdoImage}
                   alt="Imagen frontal seleccionada"
                   style={{ maxWidth: "300px", maxHeight: "300px" }}
@@ -4189,7 +4331,6 @@ const handleChangeData = (e) => {
                 className="form-control"
                 type="file"
                 id="derechoImageFile"
-                
                 onChange={(event) =>
                   setDerechoImage(URL.createObjectURL(event.target.files[0]))
                 }
@@ -4207,7 +4348,6 @@ const handleChangeData = (e) => {
                 />
               </div>
             )}
-            
           </div>
         </div>
         <hr className="mt-1" />
@@ -4233,9 +4373,7 @@ const handleChangeData = (e) => {
                 </div>
               </div>
             </div>
-            <div className="col-md" id="todoList">
-             
-            </div>
+            <div className="col-md" id="todoList"></div>
           </form>
           <hr className="mt-3" />
           <form id="myForm7">
@@ -4287,7 +4425,7 @@ const handleChangeData = (e) => {
           <form id="myForm8">
             <div className="row">
               <div className="col">
-                <div className="form-group">
+                {/* <div className="form-group">
                   <input
                     type="text"
                     name="Correo del destinatario"
@@ -4302,13 +4440,29 @@ const handleChangeData = (e) => {
                       Correo del destinatario
                     </span>
                   </label>
+                </div> */}
+                <div className="form-group">
+                  <input
+                    type="text"
+                    name="Correo del destinatario"
+                    placeholder=" "
+                    id="correo"
+                    autoComplete="off"
+                    value={destinatario}
+                    onChange={(e) => setDestinatario(e.target.value)}
+                    required
+                  />
+                  <label htmlFor="email" className="label-name">
+                    <span className="content-name">
+                      Correo del destinatario
+                    </span>
+                  </label>
                 </div>
               </div>
             </div>
             <hr className="mt-3" />
             <div className="row">
               <div className="col">
-                
                 <div className="col mt-1">
                   {
                     <div>
@@ -4474,7 +4628,6 @@ const handleChangeData = (e) => {
                       <option className="option-select" value="Gabriel Avecina">
                         Gabriel Avecina
                       </option>
-                      
                     </select>
                   </div>
                 }
@@ -4484,7 +4637,7 @@ const handleChangeData = (e) => {
           </form>
           <form id="myForm9">
             <div className="row">
-            <div className="col"></div>
+              <div className="col"></div>
               <div className="col">
                 <div className="form-group mt-2">
                   <input
@@ -4515,34 +4668,101 @@ const handleChangeData = (e) => {
           </form>
         </div>
       </div>
-     
-      <PDFDownloadLink document={generarPDF()} fileName="PireRayenTasacion.pdf">
-        {({ blob, url, loading, error }) => (
-          <button
-            onClick={(event) => {
-              event.preventDefault();
-              Swal.fire({
-                title: "¿Deseas finalizar y descargar el PDF?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonText: "Sí",
-                cancelButtonText: "No",
-                customClass: {
-                  confirmButton: "swal2-confirm-color",
-                },
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  window.open(url, "_blank");
-                 window.location.reload()
-                }
-              });
-            }}
-            style={{marginTop:"2%"}}
-          >
-            {loading ? "Generando PDF..." : "Finalizar"}
-          </button>
-        )}
-      </PDFDownloadLink>
+
+      {/* FUNCIONANDO 22/08 10:50 */}
+  {/* <PDFDownloadLink
+    document={generarPDF()}
+    fileName="PireRayenTasacion.pdf"
+  >
+    {({ url, loading }) => (
+      <button
+        onClick={(event) => {
+          event.preventDefault();
+          Swal.fire({
+            title: "¿Deseas finalizar y descargar el PDF?",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Sí",
+            cancelButtonText: "No",
+            customClass: {
+              confirmButton: "swal2-confirm-color",
+            },
+          }).then((result) => {
+            if (result.isConfirmed) {
+              // Crear un enlace temporal y simular un clic para descargar el PDF
+              const tempLink = document.createElement("a");
+              tempLink.href = url;
+              tempLink.download = "PireRayenTasacion.pdf";
+              tempLink.target = "_blank";
+              document.body.appendChild(tempLink);
+              tempLink.click();
+              document.body.removeChild(tempLink);
+              console.log(url);
+             handleMail(url); // Llama a handleMail después de confirmar
+             
+              // Actualizar la página después de la descarga
+              //window.location.reload();
+            }
+          });
+        }}
+        style={{ marginTop: "2%" }}
+      >
+        {loading ? "Generando PDF..." : "Finalizar"}
+      </button>
+    )}
+  </PDFDownloadLink> */}
+
+
+<PDFDownloadLink
+  document={generarPDF()}
+  fileName="PireRayenTasacion.pdf"
+>
+  {({ blob, url, loading }) => ( // Agrega el parámetro 'blob'
+    <button
+      onClick={async (event) => {
+        event.preventDefault();
+        Swal.fire({
+          title: "¿Deseas finalizar y descargar el PDF? Se enviará un mail al destinatario",
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Sí",
+          cancelButtonText: "No",
+          customClass: {
+            confirmButton: "swal2-confirm-color",
+          },
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            // Obtener el blob del PDF
+            const pdfBlob = await blob;
+
+            // Leer el contenido del blob como Base64
+            const reader = new FileReader();
+            reader.onload = () => {
+              const pdfContentBase64 = reader.result.split(',')[1]; // Obtén el contenido en Base64
+
+              // Envía pdfContentBase64 al servidor
+              // ...
+
+              // Guardar el archivo en el frontend
+              saveAs(pdfBlob, 'PireRayenTasacion.pdf');
+
+              // Llamar a handleMail después de confirmar
+              handleMail(pdfContentBase64);
+            };
+            reader.readAsDataURL(pdfBlob);
+
+            // Actualizar la página después de la descarga
+            //window.location.reload();
+          }
+        });
+      }}
+      style={{ marginTop: "2%" }}
+    >
+      {loading ? "Generando PDF..." : "Finalizar"}
+    </button>
+  )}
+</PDFDownloadLink>
+
 
       <hr className="mt-3" />
     </div>
