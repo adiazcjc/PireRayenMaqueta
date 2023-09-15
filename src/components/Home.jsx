@@ -4,6 +4,7 @@ import axios from "axios";
 import styles from "./Home.css";
 import NavBar from "./NavBar";
 import TodoList from "./List";
+import { saveAs } from 'file-saver'
 import { useDispatch, useSelector } from "react-redux";
 import { getCars, filterModel, filterVersion, getClean } from "../actions";
 import {
@@ -29,12 +30,9 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import { Modal } from "bootstrap";
 import lapiz from "../images/lapiz.png";
 
-import emailjs from "emailjs-com";
+// import emailjs from "emailjs-com";
 
-const EMAILJS_USER_ID = "UtRcXI2FN-gOfvi2S"; // Reemplaza con tu User ID de EmailJS
-const EMAILJS_SERVICE_ID = "service_ycg2vkr";
-const EMAILJS_TEMPLATE_ID = "template_26mxeqm";
-emailjs.init(EMAILJS_USER_ID);
+// emailjs.init(EMAILJS_USER_ID);
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -569,27 +567,17 @@ export default function Home() {
 
   const handleMail = async (url) => {
     try {
-      const fullMessage = `<!doctype html>
-      <html ⚡4email>
-      <head>
-        <meta charset="utf-8">
-        <style amp4email-boilerplate>body{visibility:hidden}</style>
-        <script async src="https://cdn.ampproject.org/v0.js"></script>
-        <script async custom-element="amp-anim" src="https://cdn.ampproject.org/v0/amp-anim-0.1.js"></script>
-      </head>
-      <body>
-        <p>Image: <amp-img src="https://cldup.com/P0b1bUmEet.png" width="16" height="16"/></p>
-        <p>GIF (requires "amp-anim" script in header):<br/>
-          <amp-anim src="https://cldup.com/D72zpdwI-i.gif" width="500" height="350"/></p>
-      </body>
-    </html>`
+      const fullMessage = ``
     ;
-      const response = await axios.post("https://server-peritajes.onrender.com/email", {
+      // const response = await axios.post("http://localhost:3001/email", {
+        const response = await axios.post("https://server-peritajes.onrender.com/email", {
+        url,
         destinatario,
         subject: "Formulario de Tasación - PireRayen",
         mensaje: fullMessage,
       });
       console.log(response.data);
+      window.location.reload()
     } catch (error) {
       console.error("Error al enviar el correo", error);
     }
@@ -1159,7 +1147,6 @@ export default function Home() {
                             value={inputValueDominio}
                             onChange={handleInputChangeDominio}
                             required
-                            
                           />
                           <label htmlFor="patente" className="label-name">
                             <span className="content-name">Dominio</span>
@@ -4681,40 +4668,12 @@ export default function Home() {
           </form>
         </div>
       </div>
-      {/* <button onClick={handleMail}>Enviar mail</button> */}
-      {/* <button onClick={sendEmail}>Enviar Correo</button> */}
-      {/* <PDFDownloadLink document={generarPDF()} fileName="PireRayenTasacion.pdf">
-        {({ blob, url, loading, error }) => (
-          <button
-            onClick={(event) => {
-              event.preventDefault();
-              Swal.fire({
-                title: "¿Deseas finalizar y descargar el PDF?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonText: "Sí",
-                cancelButtonText: "No",
-                customClass: {
-                  confirmButton: "swal2-confirm-color",
-                },
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  window.open(url, "_blank");
-                 window.location.reload()
-                }
-              });
-            }}
-            style={{marginTop:"2%"}}
-          >
-            {loading ? "Generando PDF..." : "Finalizar"}
-          </button>
-        )}
-      </PDFDownloadLink> */}
+
+      {/* FUNCIONANDO 22/08 10:50 */}
   <PDFDownloadLink
     document={generarPDF()}
-    // fileName="PireRayenTasacion.pdf"´´
+    // fileName="PireRayenTasacion.pdf"
     fileName={`PireRayenTasacion_${inputValueDominio}.pdf`}
-   
   >
     {({ url, loading }) => (
       <button
@@ -4734,14 +4693,13 @@ export default function Home() {
               // Crear un enlace temporal y simular un clic para descargar el PDF
               const tempLink = document.createElement("a");
               tempLink.href = url;
-              // tempLink.download = "PireRayenTasacion.pdf";
+              //tempLink.download = "PireRayenTasacion.pdf";
               tempLink.download = `PireRayenTasacion_${inputValueDominio}.pdf`;
               tempLink.target = "_blank";
               document.body.appendChild(tempLink);
               tempLink.click();
               document.body.removeChild(tempLink);
               console.log(url);
-              console.log("ESTA ES LA PATENTE", inputValueDominio)
              handleMail(url); // Llama a handleMail después de confirmar
              
               // Actualizar la página después de la descarga
@@ -4756,86 +4714,58 @@ export default function Home() {
     )}
   </PDFDownloadLink>
 
-
-      {/* <PDFDownloadLink document={generarPDF()} fileName="PireRayenTasacion.pdf">
-  {({ blob, url, loading, error }) => (
+{/* 
+<PDFDownloadLink
+  document={generarPDF()}
+  // fileName="PireRayenTasacion.pdf"
+  fileName={`PireRayenTasacion_${inputValueDominio}.pdf`}
+>
+  {({ blob, url, loading }) => ( // Agrega el parámetro 'blob'
     <button
-      onClick={(event) => {
+      onClick={async (event) => {
         event.preventDefault();
         Swal.fire({
-          title: '¿Deseas finalizar y descargar el PDF?',
-          icon: 'question',
+          title: "¿Deseas finalizar y descargar el PDF? Se enviará un mail al destinatario",
+          icon: "question",
           showCancelButton: true,
-          confirmButtonText: 'Sí',
-          cancelButtonText: 'No',
+          confirmButtonText: "Sí",
+          cancelButtonText: "No",
           customClass: {
-            confirmButton: 'swal2-confirm-color',
+            confirmButton: "swal2-confirm-color",
           },
-        }).then((result) => {
+        }).then(async (result) => {
           if (result.isConfirmed) {
-            window.open(url, '_blank');
-            window.location.reload();
+            // Obtener el blob del PDF
+            const pdfBlob = await blob;
+
+            // Leer el contenido del blob como Base64
+            const reader = new FileReader();
+            reader.onload = () => {
+              const pdfContentBase64 = reader.result.split(',')[1]; // Obtén el contenido en Base64
+
+              // Envía pdfContentBase64 al servidor
+              // ...
+
+              // Guardar el archivo en el frontend
+              saveAs(pdfBlob, 'PireRayenTasacion.pdf');
+
+              // Llamar a handleMail después de confirmar
+              handleMail(pdfContentBase64);
+            };
+            reader.readAsDataURL(pdfBlob);
+
+            // Actualizar la página después de la descarga
+            //window.location.reload();
           }
         });
       }}
-      style={{ marginTop: '2%' }}
+      style={{ marginTop: "2%" }}
     >
-      {loading ? 'Generando PDF...' : 'Finalizar'}
+      {loading ? "Generando PDF..." : "Finalizar"}
     </button>
   )}
 </PDFDownloadLink> */}
-      <div>
-        {/* Generar el PDF y capturar el enlace */}
-        {/* <PDFDownloadLink document={<generarPDF />} fileName="PireRayenTasacion.pdf">
-        {({ url, loading }) => {
-          if (loading) {
-            return <button>Generando PDF...</button>;
-          }
 
-          // Almacenar el enlace en el estado cuando esté disponible
-          if (url && pdfLink !== url) {
-            setPdfLink(url);
-          }
-
-          const handleMail = async () => {
-            try {
-              const response = await axios.post('http://localhost:3001/email', {
-                destinatario,
-                mensaje: `Hola, te envío el PDF con el formulario. Puedes descargarlo aquí: ${pdfLink}`,
-              });
-              console.log(response.data);
-            } catch (error) {
-              console.error('Error al enviar el correo', error);
-            }
-          };
-
-          return (
-            <button
-              onClick={(event) => {
-                event.preventDefault();
-                Swal.fire({
-                  title: '¿Deseas finalizar y enviar el PDF por correo?',
-                  icon: 'question',
-                  showCancelButton: true,
-                  confirmButtonText: 'Sí',
-                  cancelButtonText: 'No',
-                  customClass: {
-                    confirmButton: 'swal2-confirm-color',
-                  },
-                }).then(async (result) => {
-                  // if (result.isConfirmed) {
-                  //   await handleMail();
-                  // }
-                });
-              }}
-              style={{ marginTop: '2%' }}
-            >
-              Finalizar
-            </button>
-          );
-        }}
-      </PDFDownloadLink> */}
-      </div>
 
       <hr className="mt-3" />
     </div>
