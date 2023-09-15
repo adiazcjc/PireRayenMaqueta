@@ -29,7 +29,7 @@
     "sweetalert2": "^11.7.5",
     "web-vitals": "^2.1.4"
   },
-  "homepage": "http://www.pirerayen.com.ar/peritajes",
+
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
